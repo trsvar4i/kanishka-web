@@ -137,7 +137,7 @@ export default function AiAssistant({ lang = 'ru' }: AiAssistantProps) {
           id: 'welcome-msg',
           role: 'model',
           content: t.welcome,
-          suggestedProductIds: ['kan-002', 'kan-001', 'kan-007'],
+          suggestedProductIds: ['kan-002', 'kan-001'],
           timestamp: Date.now(),
         },
       ]);
@@ -146,10 +146,12 @@ export default function AiAssistant({ lang = 'ru' }: AiAssistantProps) {
 
   useEffect(() => {
     if (isOpen) {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      if (messages.length > 1) {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      }
       setTimeout(() => inputRef.current?.focus(), 150);
     }
-  }, [isOpen, messages, isLoading]);
+  }, [isOpen, messages.length, isLoading]);
 
   const handleSaveKey = (e: React.SyntheticEvent) => {
     e.preventDefault();
