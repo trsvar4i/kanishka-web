@@ -74,11 +74,20 @@ export function parseProductIds(text: string): { cleanText: string; productIds: 
     }
   }
 
-  // Clean markers out of prose or replace with model name if needed
-  const cleanText = text.replace(/\[product:(kan-\d{3})\]/g, (marker, id) => {
+  // Clean markers out of prose and avoid duplicating the product name
+  let cleanText = text;
+  for (const id of productIds) {
     const prod = products.find((p) => p.id === id);
-    return prod ? `**${prod.name}**` : marker;
-  });
+    if (prod) {
+      const nameRegex = new RegExp(
+        `\\[product:${id}\\]\\s*(\\*\\*${prod.name}\\*\\*|${prod.name})?`,
+        'gi'
+      );
+      cleanText = cleanText.replace(nameRegex, `**${prod.name}**`);
+    } else {
+      cleanText = cleanText.replace(`[product:${id}]`, '');
+    }
+  }
 
   return { cleanText, productIds };
 }
