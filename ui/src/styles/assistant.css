@@ -29,7 +29,7 @@ body[data-page="product"] .ai-widget-container {
   gap: 10px;
   padding: 12px 20px;
   background: var(--surface, #292a25);
-  color: var(--ink, #f1ede2);
+  color: var(--text, #f1ede2);
   border: 1px solid var(--line, #3b3c35);
   border-radius: 9999px;
   font-size: 15px;
@@ -134,7 +134,7 @@ body[data-page="product"] .ai-widget-container {
   font-size: 16px;
   letter-spacing: 0.03em;
   text-transform: uppercase;
-  color: var(--ink, #f1ede2);
+  color: var(--text, #f1ede2);
   line-height: 1.2;
 }
 
@@ -164,7 +164,7 @@ body[data-page="product"] .ai-widget-container {
 }
 
 .ai-icon-btn:hover {
-  color: var(--ink, #f1ede2);
+  color: var(--text, #f1ede2);
   background: #31322b;
 }
 
@@ -194,7 +194,7 @@ body[data-page="product"] .ai-widget-container {
   border-radius: 6px;
   padding: 8px 12px;
   font-size: 12px;
-  color: var(--ink, #f1ede2);
+  color: var(--text, #f1ede2);
   outline: none;
 }
 
@@ -283,7 +283,7 @@ body[data-page="product"] .ai-widget-container {
   border-radius: 12px;
   font-size: 14px;
   line-height: 1.5;
-  color: var(--ink, #f1ede2);
+  color: var(--text, #f1ede2);
   word-break: break-word;
 }
 
@@ -322,7 +322,7 @@ body[data-page="product"] .ai-widget-container {
   border: 1px solid #383931;
   border-radius: 8px;
   text-decoration: none;
-  color: var(--ink, #f1ede2);
+  color: var(--text, #f1ede2);
   transition: transform 0.15s, border-color 0.15s, background 0.15s;
 }
 
@@ -384,7 +384,7 @@ body[data-page="product"] .ai-widget-container {
 
 .ai-chip-btn {
   background: #282923;
-  color: var(--ink, #f1ede2);
+  color: var(--text, #f1ede2);
   border: 1px solid #3d3e36;
   border-radius: 16px;
   padding: 6px 12px;
@@ -415,7 +415,7 @@ body[data-page="product"] .ai-widget-container {
   border: 1px solid #3d3e36;
   border-radius: 8px;
   padding: 10px 14px;
-  color: var(--ink, #f1ede2);
+  color: var(--text, #f1ede2);
   font-size: 14px;
   outline: none;
   transition: border-color 0.15s;
