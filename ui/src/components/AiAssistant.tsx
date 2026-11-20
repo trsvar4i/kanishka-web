@@ -125,7 +125,7 @@ const UI_TEXT: Record<
     btnLabel: 'Ассистент Kanishka',
     title: 'KANIШKA АССИСТЕНТ',
     subtitle: 'Консультант авторской мастерской',
-    placeholder: 'Спросите о товаре, размере или материале...',
+    placeholder: 'Спросите о товаре или размере...',
     send: 'Отправить',
     welcome:
       'Я ассистент Kanishka! Готов посоветовать вам подходящую вещь или рассказать о товаре подробнее.\n\nЧто вас интересует — кожаная сумка, вместительный рюкзак или подарок?',
@@ -134,7 +134,7 @@ const UI_TEXT: Record<
     btnLabel: 'Kanishka yordamchisi',
     title: 'KANIШKA YORDAMCHI',
     subtitle: 'Ustaxona shaxsiy maslahatchisi',
-    placeholder: 'Mahsulot, o‘lcham yoki material haqida so‘rang...',
+    placeholder: 'Mahsulot yoki o‘lcham haqida...',
     send: 'Yuborish',
     welcome:
       'Men Kanishka yordamchisiman! Sizga mos buyum tanlashda yordam berishga yoki mahsulot haqida batafsil aytib berishga tayyorman.\n\nSizni nima qiziqtiradi — charm sumka, ryukzak yoki sovg‘a?',
@@ -143,7 +143,7 @@ const UI_TEXT: Record<
     btnLabel: 'Kanishka Assistant',
     title: 'KANIШKA ASSISTANT',
     subtitle: 'Artisanal atelier advisor',
-    placeholder: 'Ask about items, sizes, or materials...',
+    placeholder: 'Ask about items or sizes...',
     send: 'Send',
     welcome:
       'I am Kanishka’s assistant! I’m ready to recommend the right piece or share more details about our handcrafted items.\n\nWhat are you looking for — a leather bag, a spacious backpack, or a thoughtful gift?',
@@ -181,6 +181,15 @@ export default function AiAssistant({ lang = 'ru' }: AiAssistantProps) {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
       }
       setTimeout(() => inputRef.current?.focus(), 150);
+
+      // Lock body scroll on mobile
+      if (typeof window !== 'undefined' && window.innerWidth <= 640) {
+        const originalOverflow = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+        return () => {
+          document.body.style.overflow = originalOverflow;
+        };
+      }
     }
   }, [isOpen, messages.length, isLoading]);
 
@@ -253,7 +262,16 @@ export default function AiAssistant({ lang = 'ru' }: AiAssistantProps) {
   };
 
   return (
-    <div className="ai-widget-container" aria-label="Kanishka Assistant">
+    <div className={`ai-widget-container ${isOpen ? 'is-open' : ''}`} aria-label="Kanishka Assistant">
+      {/* Mobile Backdrop */}
+      {isOpen && (
+        <div
+          className="ai-chat-backdrop"
+          onClick={() => setIsOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
       {/* Floating Trigger Button - Liquid Glassmorphism */}
       {!isOpen && (
         <button
