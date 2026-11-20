@@ -203,10 +203,10 @@ export default function AiAssistant({ lang = 'ru' }: AiAssistantProps) {
 
     try {
       const activeKey =
-        (typeof window !== 'undefined' ? localStorage.getItem('kanishka_gemini_api_key') : null) ||
-        (typeof import.meta !== 'undefined' && import.meta.env
+        (typeof import.meta !== 'undefined' && import.meta.env?.PUBLIC_GEMINI_API_KEY
           ? (import.meta.env.PUBLIC_GEMINI_API_KEY as string)
           : '') ||
+        (typeof window !== 'undefined' ? localStorage.getItem('kanishka_gemini_api_key') : null) ||
         '';
 
       const reply = await askGemini(newHistory, promptText, lang, activeKey);
@@ -302,7 +302,12 @@ export default function AiAssistant({ lang = 'ru' }: AiAssistantProps) {
           <div className="ai-messages-area">
             {messages.map((msg, idx) => (
               <div key={msg.id} className={`ai-message ${msg.role}`}>
-                <div className="ai-bubble">{msg.content}</div>
+                <div className="ai-bubble">
+                  {msg.content
+                    .replace(/\*\*([^*]+)\*\*/g, '$1')
+                    .replace(/\*([^*]+)\*/g, '$1')
+                    .replace(/\*\*/g, '')}
+                </div>
 
                 {/* Initial Welcome Screen: Ready-made Question Cards in exact same card style */}
                 {idx === 0 && messages.length === 1 && (
