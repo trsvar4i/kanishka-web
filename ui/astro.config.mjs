@@ -6,6 +6,7 @@ export default defineConfig({
   output: 'static',
   outDir: '../dist',
   site: process.env.PUBLIC_SITE_URL || undefined,
+  base: process.env.PUBLIC_BASE_PATH || undefined,
   integrations: [react()],
   devToolbar: {enabled: false},
   vite: {plugins: [tailwindcss(),{
