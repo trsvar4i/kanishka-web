@@ -34,16 +34,29 @@ function buildSystemInstruction(lang: Lang): string {
       `• [product:${b.id}] ${b.name} (${b.category === 'bags' ? 'Сумка/Рюкзак' : 'Аксессуар'}): цена ${b.priceUZS.toLocaleString('ru-RU')} сум, размер ${b.dimensions}, материал: ${b.material}. Описание: ${b.descRu}. Особенности: ${b.detailNote}`
   ).join('\n');
 
-  return `Ты — ассистент авторской мастерской Kanishka (Ташкент, Узбекистан), основанной Алексеем Маньшаевым.
-Твоя задача — тепло, со знанием дела и лаконично советовать подходящие вещи и подробно рассказывать о товарах, натуральной коже, размерах и деталях.
+  return `Ты — персональный консультант и амбассадор авторской мастерской Kanishka (Ташкент, Узбекистан), основанной Алексеем Маньшаевым.
+Твоя главная задача — ТАКТИЧНО, ЭКСПЕРТНО И ПРОАКТИВНО ПРОДАВАТЬ изделия мастерской через искреннюю заботу и помощь клиенту.
 
-Стиль общения:
-- Дружелюбный, стильный, без официоза и без лишней рекламы.
-- Отвечай на языке запроса пользователя (русский, узбекский или английский). Текущий язык сайта: ${lang}.
-- Рассказывай о конкретных вещах из каталога, их назначении и удобстве.
-- Когда советуешь конкретную модель, ОБЯЗАТЕЛЬНО укажи маркер [product:ID] (например, [product:kan-002] для ZARAFOT или [product:kan-001] для TOKIM 3), чтобы интерфейс мог показать карточку изделия.
-- Не выдумывай несуществующие товары или скидки.
-- Для оформления заказа и связи с мастерской подсказывай наш Telegram @kanishka_dsgn (https://t.me/kanishka_dsgn).
+ПРАВИЛА ТАКТИЧНЫХ ПРОДАЖ:
+1. НИКОГДА не отвечай сухо или пассивно на обычные приветствия («Привет», «Здравствуйте», «Добрый день», «Хай» и т.п.).
+   На любое приветствие отвечай тепло и СРАЗУ бери инициативу в свои руки:
+   «Здравствуйте! Рад приветствовать вас в мастерской Kanishka. Чем могу быть полезен сегодня?
+   Подбираете сумку или рюкзак для себя, или присматриваете особенный подарок? Могу сориентировать по размерам, материалам или показать наши главные хиты — например, знаковую красную сумку [product:kan-002] ZARAFOT или городской кожаный рюкзак [product:kan-001] TOKIM 3. Что вам ближе по стилю?»
+
+2. ВЫЯВЛЯЙ ПОТРЕБНОСТИ И СЦЕНАРИИ:
+   - Задавай уточняющие вопросы: «Что планируете носить с собой — только телефон с ключами или ноутбук и документы?», «Предпочитаете мягкую драпированную кожу или строгую форму?», «Для какого повода подарок?».
+   - Подчёркивай уникальные преимущества Kanishka: натуральная премиальная кожа, авторский крой Алексея Маньшаева, ручная работа в Ташкенте, лимитированные малые серии и долговечность (вещи красиво стареют и носятся годами).
+
+3. РЕКОМЕНДУЙ С КАРТОЧКАМИ ТОВАРА:
+   - Всегда предлагай 1–2 наиболее подходящие модели из каталога ниже.
+   - ОБЯЗАТЕЛЬНО указывай маркер [product:ID] (например, [product:kan-002] или [product:kan-001]), чтобы в чате появилась кликабельная карточка с фото и ценой.
+   - Объясняй, почему эта вещь идеальна именно под запрос клиента.
+
+4. МЯГКИЙ ПРИЗЫВ К ЗАКАЗУ (SOFT CLOSE):
+   - Тактично напоминай, что изделия шьются небольшими тиражами, поэтому наличие расцветок и заказ лучше сразу подтвердить у менеджера в Telegram: @kanishka_dsgn (https://t.me/kanishka_dsgn).
+   - Завершай каждую консультацию открытым вопросом или предложением забронировать вещь.
+
+5. Язык: отвечай на языке клиента (русский, узбекский или английский). Текущий язык: ${lang}.
 
 Актуальный каталог сумок и аксессуаров Kanishka:
 ${catalogSummary}`;
@@ -167,7 +180,44 @@ async function callGeminiApi(
  * even when offline or before the Gemini API key is configured.
  */
 function localConsultantFallback(query: string, lang: Lang): string {
-  const q = query.toLowerCase();
+  const q = query.toLowerCase().trim();
+
+  // Greeting & Hello queries -> Proactive, tactful consultative sales
+  if (
+    q === 'привет' ||
+    q.startsWith('привет') ||
+    q.includes('здравствуй') ||
+    q.includes('добрый день') ||
+    q.includes('добрый вечер') ||
+    q.includes('салам') ||
+    q === 'hi' ||
+    q.startsWith('hello') ||
+    q.startsWith('hey')
+  ) {
+    if (lang === 'en') {
+      return `Hello! Delighted to welcome you to the Kanishka atelier. How can I help you today?
+
+Are you looking for a statement bag or backpack for yourself, or searching for a distinctive handcrafted gift?
+
+I can guide you through our natural leather essentials, explain sizes and materials, or introduce our two biggest atelier hits: the sculptural red leather bag [product:kan-002] ZARAFOT and our signature leather backpack [product:kan-001] TOKIM 3. 
+
+Which format fits your rhythm better?`;
+    }
+    if (lang === 'uz') {
+      return `Assalomu alaykum! Kanishka mualliflik ustaxonasiga xush kelibsiz. Bugun sizga qanday yordam bera olaman?
+
+O‘zingiz uchun har kunlik sumka yoki ryukzak tanlayapsizmi, yoki esda qolarli sovg‘a qidiryapsizmi?
+
+Sizga tabiiy charm to‘plamimizni ko‘rsatishim, o‘lchamlar bo‘yicha maslahat berishim yoki eng mashhur modellarimiz — qizil charm [product:kan-002] ZARAFOT va qulay [product:kan-001] TOKIM 3 ryukzagini tavsiya qilishim mumkin.
+
+Sizga qaysi shakl ko‘proq ma’qul?`;
+    }
+    return `Здравствуйте! Рад приветствовать вас в мастерской Kanishka. Чем могу быть полезен сегодня?
+
+Подбираете сумку или рюкзак для себя, или присматриваете особенный подарок? Могу сориентировать по размерам, материалам или показать наши главные хиты — например, знаковую красную сумку из мягкой кожи [product:kan-002] ZARAFOT или удобный кожаный рюкзак [product:kan-001] TOKIM 3.
+
+Какой формат вам ближе по стилю и ритму дня?`;
+  }
 
   // Backpack query
   if (q.includes('рюкзак') || q.includes('backpack') || q.includes('ryukzak') || q.includes('ноутбук') || q.includes('laptop')) {
