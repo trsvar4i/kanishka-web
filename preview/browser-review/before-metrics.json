@@ -1,0 +1,147 @@
+[
+  {
+    "name": "home-desktop",
+    "errors": [],
+    "accessibility": [],
+    "width": 1440,
+    "scrollWidth": 1440,
+    "height": 6636,
+    "fonts": "loaded",
+    "overflows": []
+  },
+  {
+    "name": "home-mobile",
+    "errors": [],
+    "accessibility": [],
+    "width": 390,
+    "scrollWidth": 390,
+    "height": 7974,
+    "fonts": "loaded",
+    "overflows": []
+  },
+  {
+    "name": "catalog-desktop",
+    "errors": [],
+    "accessibility": [
+      {
+        "id": "heading-order",
+        "impact": "moderate",
+        "description": "Heading levels should only increase by one",
+        "nodes": [
+          {
+            "target": [
+              "article:nth-child(1) > .product-card-heading > div > h3"
+            ],
+            "summary": "Fix any of the following:\n  Heading order invalid"
+          }
+        ]
+      },
+      {
+        "id": "landmark-complementary-is-top-level",
+        "impact": "moderate",
+        "description": "Aside should not be contained in another landmark",
+        "nodes": [
+          {
+            "target": [
+              "aside"
+            ],
+            "summary": "Fix any of the following:\n  The null landmark is contained in another landmark."
+          }
+        ]
+      }
+    ],
+    "width": 1440,
+    "scrollWidth": 1440,
+    "height": 6150,
+    "fonts": "loaded",
+    "overflows": []
+  },
+  {
+    "name": "catalog-mobile",
+    "errors": [],
+    "accessibility": [
+      {
+        "id": "heading-order",
+        "impact": "moderate",
+        "description": "Heading levels should only increase by one",
+        "nodes": [
+          {
+            "target": [
+              "article:nth-child(1) > .product-card-heading > div > h3"
+            ],
+            "summary": "Fix any of the following:\n  Heading order invalid"
+          }
+        ]
+      },
+      {
+        "id": "landmark-complementary-is-top-level",
+        "impact": "moderate",
+        "description": "Aside should not be contained in another landmark",
+        "nodes": [
+          {
+            "target": [
+              "aside"
+            ],
+            "summary": "Fix any of the following:\n  The null landmark is contained in another landmark."
+          }
+        ]
+      }
+    ],
+    "width": 390,
+    "scrollWidth": 390,
+    "height": 8116,
+    "fonts": "loaded",
+    "overflows": [
+      {
+        "tag": "BUTTON",
+        "class": "",
+        "right": 487.625,
+        "text": "Аксессуары"
+      },
+      {
+        "tag": "BUTTON",
+        "class": "",
+        "right": 591.4375,
+        "text": "Одежда"
+      },
+      {
+        "tag": "BUTTON",
+        "class": "",
+        "right": 702.5,
+        "text": "Подарки"
+      }
+    ]
+  },
+  {
+    "name": "product-desktop",
+    "errors": [],
+    "accessibility": [],
+    "width": 1440,
+    "scrollWidth": 1440,
+    "height": 3101,
+    "fonts": "loaded",
+    "overflows": []
+  },
+  {
+    "name": "product-mobile",
+    "errors": [],
+    "accessibility": [],
+    "width": 390,
+    "scrollWidth": 390,
+    "height": 4251,
+    "fonts": "loaded",
+    "overflows": []
+  },
+  {
+    "name": "gallery-active-thumbnail",
+    "selected": "7",
+    "visible": false,
+    "scrollLeft": 0,
+    "activeRight": 510,
+    "trayRight": 368
+  },
+  {
+    "name": "menu-after-resize",
+    "hidden": false
+  }
+]

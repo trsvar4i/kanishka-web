@@ -1,0 +1,140 @@
+[
+  {
+    "name": "desktop",
+    "width": 1440,
+    "height": 900,
+    "route": "home",
+    "wordmark": {
+      "top": 108,
+      "height": 112,
+      "width": 560,
+      "bottom": 220
+    },
+    "categories": {
+      "top": 894.6875,
+      "height": 72.390625,
+      "width": 1324.8125,
+      "bottom": 967.078125
+    },
+    "firstProduct": {
+      "top": 1244.625,
+      "height": 861.875,
+      "width": 646.40625,
+      "bottom": 2106.5
+    },
+    "heading": null
+  },
+  {
+    "name": "desktop",
+    "width": 1440,
+    "height": 900,
+    "route": "catalog",
+    "wordmark": null,
+    "categories": null,
+    "firstProduct": {
+      "top": 419.46875,
+      "height": 677.1875,
+      "width": 507.890625,
+      "bottom": 1096.65625
+    },
+    "heading": {
+      "top": 118,
+      "height": 78.390625,
+      "width": 1324.8125,
+      "bottom": 196.390625
+    },
+    "optionsOpen": false
+  },
+  {
+    "name": "laptop",
+    "width": 1280,
+    "height": 800,
+    "route": "home",
+    "wordmark": {
+      "top": 108,
+      "height": 112,
+      "width": 560,
+      "bottom": 220
+    },
+    "categories": {
+      "top": 834.484375,
+      "height": 69.3125,
+      "width": 1177.625,
+      "bottom": 903.796875
+    },
+    "firstProduct": {
+      "top": 1171.46875,
+      "height": 763.75,
+      "width": 572.8125,
+      "bottom": 1935.21875
+    },
+    "heading": null
+  },
+  {
+    "name": "laptop",
+    "width": 1280,
+    "height": 800,
+    "route": "catalog",
+    "wordmark": null,
+    "categories": null,
+    "firstProduct": {
+      "top": 411.328125,
+      "height": 596.53125,
+      "width": 447.40625,
+      "bottom": 1007.859375
+    },
+    "heading": {
+      "top": 118,
+      "height": 70.25,
+      "width": 1177.625,
+      "bottom": 188.25
+    },
+    "optionsOpen": false
+  },
+  {
+    "name": "mobile",
+    "width": 390,
+    "height": 844,
+    "route": "home",
+    "wordmark": {
+      "top": 87,
+      "height": 1,
+      "width": 1,
+      "bottom": 88
+    },
+    "categories": {
+      "top": 801.015625,
+      "height": 169.5625,
+      "width": 346,
+      "bottom": 970.578125
+    },
+    "firstProduct": {
+      "top": 1224.328125,
+      "height": 438.265625,
+      "width": 346,
+      "bottom": 1662.59375
+    },
+    "heading": null
+  },
+  {
+    "name": "mobile",
+    "width": 390,
+    "height": 844,
+    "route": "catalog",
+    "wordmark": null,
+    "categories": null,
+    "firstProduct": {
+      "top": 499.40625,
+      "height": 438.265625,
+      "width": 346,
+      "bottom": 937.671875
+    },
+    "heading": {
+      "top": 96,
+      "height": 85.375,
+      "width": 346,
+      "bottom": 181.375
+    },
+    "optionsOpen": false
+  }
+]

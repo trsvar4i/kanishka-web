@@ -1,0 +1,19 @@
+---
+import {branches} from '../data/branches';
+import {translations} from '../data/translations';
+import type {Lang} from '../lib/types';
+interface Props {lang:Lang}
+const {lang}=Astro.props;
+const c=translations[lang];
+---
+<section id="branches" class="stores section-space" aria-labelledby="stores-title">
+  <div class="stores-heading"><h2 id="stores-title">{c.storesTitle}</h2><p>{c.storesIntro}</p></div>
+  <div id="store-grid" class="store-grid">
+    {branches.map((branch,index)=><article class="store-card">
+      <span class="store-index" aria-hidden="true">0{index+1}</span>
+      <div class="store-address"><h3>{branch.address[lang].split(',').slice(0,2).join(',').replace(/^ул\. /,'')}</h3><p class="store-landmark">{branch.landmark[lang].replace(/^(Ориентир: |Landmark: |Mo'ljal: )/,'')}</p></div>
+      <div class="store-contact"><p>{branch.hours[lang]}</p><a class="store-phone" href={`tel:${branch.phones[0]!.replace(/\s/g,'')}`}>{branch.phones[0]}</a></div>
+      <div class="store-links"><a href={branch.maps.google} target="_blank" rel="noopener">Google Maps ↗</a><a href={branch.maps.yandex} target="_blank" rel="noopener">{c.yandex} ↗</a><button data-copy-address={branch.address[lang]} data-success={c.copied} data-error={c.copyFailed} class="text-button">{c.copy}</button></div>
+    </article>)}
+  </div>
+</section>

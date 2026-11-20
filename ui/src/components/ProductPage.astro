@@ -1,0 +1,9 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+import ProductExperience from './ProductExperience';
+import {productProps} from '../lib/island-props';
+import type {Lang,Product} from '../lib/types';
+interface Props {lang:Lang;product:Product}
+const {lang,product}=Astro.props;
+---
+<SiteLayout lang={lang} route={`products/${product.slug}/`} page="product" productId={product.id} title={`${product.title[lang]} — Kanishka`} description={product.description[lang]} image={product.images[product.cardImageIndex||0]}><ProductExperience {...productProps(product,lang)} client:load/></SiteLayout>

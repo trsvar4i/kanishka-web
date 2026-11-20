@@ -1,0 +1,24 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+import Hero from './Hero.astro';
+import Workshop from './Workshop.astro';
+import Stores from './Stores.astro';
+import ProductCard from './ProductCard';
+import GiftPicker from './GiftPicker';
+import {products} from '../data/products';
+import {translations} from '../data/translations';
+import {pickCopy,pathFor} from '../lib/i18n';
+import {cardCopyKeys} from '../lib/products';
+import {giftProps} from '../lib/island-props';
+import type {Lang} from '../lib/types';
+interface Props {lang:Lang}
+const {lang}=Astro.props;const c=translations[lang];
+const featured=products.filter(p=>['kan-002','kan-003'].includes(p.id));
+---
+<SiteLayout lang={lang} title={c.homeTitle} description={c.heroDescription}>
+  <Hero lang={lang}/>
+  <section class="home-selection section-space"><div class="section-heading"><div><h2>{c.homeSelection}</h2><p class="section-intro">{c.homeSelectionText}</p></div><a class="text-link" href={pathFor(lang,'catalog/')}><span>{c.allCollection}</span><span aria-hidden="true"> ↗</span></a></div><div class="product-grid" id="featured-grid">{featured.map(product=><ProductCard product={product} lang={lang} copy={pickCopy(lang,cardCopyKeys)}/>)}</div><nav class="category-shortcuts" aria-label={c.categoriesLabel}>{(['bags','accessories','clothes'] as const).map(category=><a href={`${pathFor(lang,'catalog/')}?category=${category}`}>{c[category]} ↗</a>)}</nav></section>
+  <Workshop lang={lang}/>
+  <section class="home-gifts section-space" id="gifts" aria-labelledby="gift-section-title"><div class="section-heading"><div><p class="eyebrow">{c.giftSectionEyebrow}</p><h2 id="gift-section-title">{c.giftSectionTitle}</h2><p class="section-intro">{c.giftSectionIntro}</p></div></div><GiftPicker {...giftProps(lang)} client:load/><noscript><p><a class="text-link" href={pathFor(lang,'catalog/')}>{c.giftOpenCatalog} ↗</a></p></noscript><div class="gift-section-footer"><p>{c.giftCollectionsNote}</p><a class="text-link" href="https://t.me/kanishka_admin" target="_blank" rel="noopener">{c.giftSelectionHelp} ↗</a></div></section>
+  <Stores lang={lang}/>
+</SiteLayout>

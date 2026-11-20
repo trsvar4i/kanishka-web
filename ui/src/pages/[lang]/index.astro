@@ -1,0 +1,9 @@
+---
+import HomePage from '../../components/HomePage.astro';
+import {secondaryLanguages} from '../../lib/i18n';
+import type {Lang} from '../../lib/types';
+export function getStaticPaths(){return secondaryLanguages.map(lang=>({params:{lang},props:{lang}}));}
+interface Props {lang:Lang}
+const {lang}=Astro.props;
+---
+<HomePage lang={lang}/>

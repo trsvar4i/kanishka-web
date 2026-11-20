@@ -1,0 +1,8 @@
+---
+import {translations} from '../data/translations';
+import {pathFor} from '../lib/i18n';
+import type {Lang} from '../lib/types';
+interface Props {lang:Lang}
+const {lang}=Astro.props;const c=translations[lang];
+---
+<section class="hero"><div class="hero-copy"><p class="eyebrow">{c.heroEyebrow}</p><h1><span>{c.heroLine1}</span><br/><span>{c.heroLine2}</span></h1><p class="hero-description">{c.heroDescription}</p><div class="hero-actions"><a class="button button-primary" href={pathFor(lang,'catalog/')}><span>{c.explore}</span><span aria-hidden="true">↗</span></a><a class="text-link" href="#philosophy">{c.navAbout}</a></div><p class="hero-origin">TASHKENT, UZBEKISTAN<br/><span>{c.strip3}</span></p></div><div class="hero-photos"><figure class="hero-main-photo"><img src="/assets/images/latest-21.jpg" alt={c.heroAlt} width="450" height="800" fetchpriority="high"/><figcaption><a href={pathFor(lang,'products/tokim-3/')}><span>{c.heroMainCaption}</span><span aria-hidden="true">↗</span></a></figcaption></figure><figure class="hero-detail-photo"><img src="/assets/images/latest-06.jpg" alt={c.detailAlt} width="450" height="800"/><figcaption>{c.heroDetailCaption}</figcaption></figure></div></section>

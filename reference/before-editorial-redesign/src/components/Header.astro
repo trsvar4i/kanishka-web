@@ -1,0 +1,16 @@
+---
+import {translations} from '../data/translations';
+import {languages,type Lang} from '../lib/types';
+import {pathFor} from '../lib/i18n';
+interface Props {lang:Lang;route:string;page:string}
+const {lang,route,page}=Astro.props;
+const copy=translations[lang];
+const navigation=[{href:pathFor(lang,'catalog/'),key:'navCatalog'},{href:pathFor(lang)+'#philosophy',key:'navAbout'},{href:pathFor(lang)+'#gifts',key:'navGifts'},{href:pathFor(lang)+'#branches',key:'navStores'}] as const;
+---
+<a class="skip-link" href="#main">{copy.skip}</a>
+<header class="header">
+  <a class="brand" href={pathFor(lang)} aria-label={`Kanishka — ${copy.home}`}><img src="/assets/images/brand-logo.jpg" alt="Kanishka" width="160" height="160"/></a>
+  <nav class="desktop-nav" aria-label={copy.mainNav}>{navigation.map(({href,key})=><a href={href} aria-current={page==='catalog'&&key==='navCatalog'?'page':undefined}>{copy[key]}</a>)}</nav>
+  <div class="header-controls"><div class="language-switch" aria-label="Language">{languages.map(locale=><a href={pathFor(locale,route)} data-lang={locale} data-language-link aria-current={locale===lang?'page':undefined} lang={locale} aria-label={locale==='ru'?'Русский':locale==='uz'?'O‘zbekcha':'English'}>{locale.toUpperCase()}</a>)}</div><a class="header-contact" href="https://t.me/kanishka_admin" target="_blank" rel="noopener">{copy.contact}</a><button id="menu-toggle" class="menu-toggle" aria-label={copy.menu} data-open-label={copy.menu} data-close-label={copy.menuClose} aria-expanded="false" aria-controls="mobile-nav"><span></span><span></span></button></div>
+  <nav id="mobile-nav" class="mobile-nav" hidden aria-label={copy.mobileNav}>{navigation.map(({href,key})=><a href={href}>{copy[key]}</a>)}<a href="https://t.me/kanishka_admin" target="_blank" rel="noopener">Telegram ↗</a></nav>
+</header>

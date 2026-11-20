@@ -1,0 +1,28 @@
+---
+import BrandMark from './BrandMark.astro';
+import {translations} from '../data/translations';
+import {pathFor} from '../lib/i18n';
+import type {Lang} from '../lib/types';
+interface Props {lang:Lang}
+const {lang}=Astro.props;
+const c=translations[lang];
+---
+<section class="hero">
+  <div class="hero-topline"><span>{c.heroEyebrow}</span><span>{c.heroOrigin}</span></div>
+  <h1 class="hero-wordmark"><span class="sr-only">{c.homeTitle}</span><BrandMark decorative/></h1>
+  <div class="hero-spread">
+    <a class="hero-cover" href={pathFor(lang,'products/zarafot/')} aria-label={c.heroMainCaption}>
+      <img src="/assets/images/latest-00.jpg" alt={c.heroAlt} width="450" height="800" fetchpriority="high"/>
+      <span class="hero-photo-label">ZARAFOT <span aria-hidden="true">→</span></span>
+    </a>
+    <div class="hero-copy">
+      <p class="hero-statement">{c.heroStatement}</p>
+      <p class="hero-description">{c.heroDescription}</p>
+      <a class="button button-primary" href={pathFor(lang,'catalog/')}><span>{c.explore}</span><span aria-hidden="true">→</span></a>
+    </div>
+    <figure class="hero-texture">
+      <img src="/assets/images/latest-06.jpg" alt={c.detailAlt} width="450" height="800"/>
+      <figcaption>{c.heroDetailCaption}</figcaption>
+    </figure>
+  </div>
+</section>

@@ -1,0 +1,14 @@
+---
+import BrandMark from './BrandMark.astro';
+import {translations} from '../data/translations';
+import {pathFor} from '../lib/i18n';
+import type {Lang} from '../lib/types';
+interface Props {lang:Lang}
+const {lang}=Astro.props;
+const c=translations[lang];
+---
+<footer class="footer">
+  <div class="footer-main"><a class="brand" href={pathFor(lang)} aria-label={`Kanishka — ${c.home}`}><BrandMark decorative/></a><p>{c.footerSignature}</p><div class="footer-social"><a href="https://instagram.com/kanishka_dsgn" target="_blank" rel="noopener">Instagram ↗</a><a href="https://t.me/kanishka_dsgn" target="_blank" rel="noopener">Telegram ↗</a></div></div>
+  <div class="footer-bottom"><span>© {new Date().getFullYear()} Kanishka</span><span>{c.heroOrigin}</span><a href={pathFor(lang)+'#branches'}>{c.navStores}</a></div>
+</footer>
+<div id="toast" class="toast" hidden role="status" aria-live="polite"></div>

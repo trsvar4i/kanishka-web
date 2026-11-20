@@ -1,0 +1,10 @@
+---
+import ProductPage from '../../../components/ProductPage.astro';
+import {products} from '../../../data/products';
+import {secondaryLanguages} from '../../../lib/i18n';
+import type {Lang,Product} from '../../../lib/types';
+export function getStaticPaths(){return secondaryLanguages.flatMap(lang=>products.map(product=>({params:{lang,slug:product.slug},props:{lang,product}})));}
+interface Props {lang:Lang;product:Product}
+const {lang,product}=Astro.props;
+---
+<ProductPage lang={lang} product={product}/>

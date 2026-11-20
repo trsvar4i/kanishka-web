@@ -1,0 +1,9 @@
+---
+import {translations} from '../data/translations';
+import {pathFor} from '../lib/i18n';
+import type {Lang} from '../lib/types';
+interface Props {lang:Lang}
+const {lang}=Astro.props;const copy=translations[lang];
+---
+<footer class="footer"><div class="footer-main"><a class="brand" href={pathFor(lang)} aria-label={`Kanishka — ${copy.home}`}><img src="/assets/images/brand-logo.jpg" alt="Kanishka" width="160" height="160" loading="lazy"/></a><p>{copy.footerSignature}</p><div class="footer-social"><a href="https://instagram.com/kanishka_dsgn" target="_blank" rel="noopener">Instagram ↗</a><a href="https://t.me/kanishka_dsgn" target="_blank" rel="noopener">Telegram ↗</a></div></div><div class="footer-bottom"><span>© {new Date().getFullYear()} Kanishka · Tashkent</span><a href={pathFor(lang)+'#branches'}>{copy.navStores}</a><a href="https://t.me/kanishka_admin" target="_blank" rel="noopener">{copy.contact}</a></div></footer>
+<div id="toast" class="toast" hidden role="status" aria-live="polite"></div>

@@ -1,0 +1,10 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+import Catalog from './Catalog';
+import {translations} from '../data/translations';
+import {catalogProps} from '../lib/island-props';
+import type {Lang} from '../lib/types';
+interface Props {lang:Lang}
+const {lang}=Astro.props;const c=translations[lang];
+---
+<SiteLayout lang={lang} route="catalog/" page="catalog" title={`${c.catalogTitle} — Kanishka`} description={c.catalogIntro}><section class="catalog-page page-space"><div class="page-heading"><h1>{c.catalogTitle}</h1><p>{c.catalogIntro}</p></div><Catalog {...catalogProps(lang)} client:load/></section></SiteLayout>

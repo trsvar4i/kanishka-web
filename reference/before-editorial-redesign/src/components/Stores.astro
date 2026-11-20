@@ -1,0 +1,8 @@
+---
+import {branches} from '../data/branches';
+import {translations} from '../data/translations';
+import type {Lang} from '../lib/types';
+interface Props {lang:Lang}
+const {lang}=Astro.props;const copy=translations[lang];
+---
+<section id="branches" class="stores section-space"><div class="section-heading"><div><h2>{copy.storesTitle}</h2><p class="section-intro">{copy.storesIntro}</p></div></div><div id="store-grid" class="store-grid">{branches.map(branch=><article class="store-card"><h3>{branch.address[lang].split(',').slice(0,2).join(',').replace(/^ул\. /,'')}</h3><p>{branch.hours[lang]}</p><a class="store-phone" href={`tel:${branch.phones[0]!.replace(/\s/g,'')}`}>{branch.phones[0]}</a><p class="store-landmark">{branch.landmark[lang].replace(/^(Ориентир: |Landmark: |Mo'ljal: )/,'')}</p><div class="store-links"><a href={branch.maps.google} target="_blank" rel="noopener">Google Maps ↗</a><a href={branch.maps.yandex} target="_blank" rel="noopener">{copy.yandex} ↗</a><button data-copy-address={branch.address[lang]} data-success={copy.copied} data-error={copy.copyFailed} class="text-button">{copy.copy}</button></div></article>)}</div></section>

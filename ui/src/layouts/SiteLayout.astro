@@ -1,0 +1,19 @@
+---
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import {languages,type Lang} from '../lib/types';
+import {pathFor} from '../lib/i18n';
+import '../styles.css';
+import '../styles/site.css';
+interface Props {lang:Lang;title:string;description:string;route?:string;page?:string;image?:string;productId?:string}
+const {lang,title,description,route='',page='home',image='/assets/images/latest-00.jpg',productId}=Astro.props;
+const absolute=(path:string)=>Astro.site?new URL(path,Astro.site).href:path;
+const fontPreloads=[
+  '/assets/fonts/kanishka-03.woff2',
+  '/assets/fonts/kanishka-14.woff2',
+  ...(lang==='ru'?['/assets/fonts/kanishka-01.woff2','/assets/fonts/kanishka-09.woff2']:[]),
+];
+---
+<!doctype html>
+<html lang={lang}><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="theme-color" content="#22231f"/><title>{title}</title><meta name="description" content={description}/><meta property="og:title" content={title}/><meta property="og:description" content={description}/><meta property="og:type" content={page==='product'?'product':'website'}/><meta property="og:image" content={absolute(image)}/><meta property="og:url" content={absolute(pathFor(lang,route))}/><link rel="canonical" href={absolute(pathFor(lang,route))}/>{languages.map(locale=><link rel="alternate" hreflang={locale} href={absolute(pathFor(locale,route))}/>)}<link rel="alternate" hreflang="x-default" href={absolute(pathFor('ru',route))}/><link rel="icon" href="/assets/images/favicon.svg"/>{page!=='catalog'&&<link rel="preload" as="image" href={image}/>}{fontPreloads.map(href=><link rel="preload" as="font" type="font/woff2" href={href} crossorigin="anonymous"/>)}</head>
+<body data-page={page} data-product-id={productId}><Header lang={lang} route={route} page={page}/><main id="main"><slot/></main><Footer lang={lang}/><script>import '../scripts/site';</script></body></html>

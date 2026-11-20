@@ -1,0 +1,12 @@
+{
+  "extends": "astro/tsconfigs/strict",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
+    "baseUrl": ".",
+    "paths": {"@/*": ["src/*"]},
+    "noUncheckedIndexedAccess": true
+  },
+  "include": [".astro/types.d.ts", "src/**/*", "scripts/**/*.tsx"],
+  "exclude": ["node_modules", "../dist", "src/components/ui/accordion-1.original.tsx"]
+}

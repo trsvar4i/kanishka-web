@@ -1,0 +1,81 @@
+import {readFile} from 'node:fs/promises';
+import assert from 'node:assert/strict';
+import {JSDOM,VirtualConsole} from 'jsdom';
+const root=new URL('../../',import.meta.url);
+async function mount(file,urlPath,storedCatalog=null) {
+  const html=(await readFile(new URL(file,root),'utf8')).replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi,'');
+  const errors=[];const virtualConsole=new VirtualConsole();virtualConsole.on('jsdomError',error=>errors.push(error.message));
+  const dom=new JSDOM(html,{url:'http://127.0.0.1:8081/'+urlPath,runScripts:'dangerously',pretendToBeVisual:true,virtualConsole});
+  const w=dom.window;if(storedCatalog)w.sessionStorage.setItem('kanishka_catalog_url',storedCatalog);w.matchMedia=()=>({matches:false});w.HTMLElement.prototype.scrollIntoView=function(){};
+  w.HTMLDialogElement.prototype.showModal=function(){this.setAttribute('open','');};
+  w.HTMLDialogElement.prototype.close=function(){this.removeAttribute('open');this.dispatchEvent(new w.Event('close'));};
+  Object.defineProperty(w.navigator,'clipboard',{value:{writeText:async text=>{w.testClipboard=text;}}});
+  for(const scriptName of ['vendor/watermelon-ui','js/products','js/translations','js/templates','js/app']) {
+    const script=w.document.createElement('script');script.textContent=await readFile(new URL(`assets/${scriptName}.js`,root),'utf8');w.document.body.append(script);
+  }
+  const q=selector=>w.document.querySelector(selector);const all=selector=>[...w.document.querySelectorAll(selector)];
+  const change=(selector,value,type='change')=>{q(selector).value=value;q(selector).dispatchEvent(new w.Event(type,{bubbles:true}));};
+  return {dom,w,q,all,change,errors};
+}
+async function until(fn){for(let i=0;i<100;i++){if(fn())return;await new Promise(r=>setTimeout(r,10));}throw Error('Render timeout');}
+const home=await mount('index.html','index.html');
+assert.equal(home.all('#featured-grid .product-card').length,2);
+assert.equal(home.all('#gift-assortment .product-card').length,0,'Choose a budget before showing gifts');
+assert.equal(home.all('[data-gift-budget][aria-pressed="true"]').length,0);
+for(const [budget,count,min,max] of [['under30',3,0,200000],['30to80',4,200000,500001],['above80',3,500001,Infinity]]) {
+  const button=home.q(`[data-gift-budget="${budget}"]`);button.focus();button.click();
+  assert.equal(home.w.document.activeElement,button,'Choosing a budget keeps keyboard focus');
+  assert.equal(home.all('[data-gift-budget][aria-pressed="true"]').length,1);
+  assert.equal(button.getAttribute('aria-pressed'),'true');
+  assert.equal(home.all('#gift-assortment .product-card').length,count);
+  const prices=home.all('#gift-assortment .product-price').map(e=>Number(e.textContent.replace(/\D/g,'')));
+  assert(prices.every(price=>price>=min&&price<max),'Assortment stays within the chosen budget');
+  assert(home.q('#gift-assortment .text-link').href.endsWith(`catalog.html?category=gifts&budget=${budget}`));
+  assert(home.q('#gift-selection-status').textContent.endsWith(String(count)));
+}
+home.q('[data-lang="uz"]').click();assert(home.q('.hero-description').textContent.includes('Toshkent'));
+assert.equal(home.q('[data-gift-budget="above80"]').getAttribute('aria-pressed'),'true');
+assert.equal(home.all('#gift-assortment .product-card').length,3);
+assert(home.q('#gift-selection-status').textContent.includes('buyumlar'));
+home.q('[data-lang="en"]').click();
+assert(home.q('#gift-assortment h3').textContent.includes('500,000'));
+assert(home.q('#gift-selection-status').textContent.includes('Pieces'));
+home.q('#menu-toggle').click();assert.equal(home.q('#menu-toggle').getAttribute('aria-expanded'),'true');
+assert.deepEqual(home.errors,[]);home.dom.window.close();
+const catalog=await mount('catalog.html','catalog.html?material=leather&sort=price-asc');
+assert.equal(catalog.q('#material-filter').value,'leather');
+assert.equal(catalog.q('#catalog-sort').value,'price-asc');
+assert.equal(catalog.all('.product-card').length,6);
+const prices=catalog.all('.product-price').map(e=>Number(e.textContent.replace(/\D/g,'')));
+assert.deepEqual(prices,[80000,160000,280000,400000,530000,650000]);
+catalog.q('#show-more').click();assert.equal(catalog.all('.product-card').length,7);assert(catalog.w.location.search.includes('all=1'));
+catalog.q('#reset-filters').click();assert.equal(catalog.w.location.search,'');
+catalog.change('#catalog-search','PITAK','input');assert.equal(catalog.all('.product-card').length,1);assert(catalog.w.location.search.includes('q=PITAK'));
+assert(catalog.q('.product-image-link').href.endsWith('/products/pitak-4/'));
+catalog.change('#catalog-search','zz-no-match','input');assert.equal(catalog.q('#catalog-empty').hidden,false);
+catalog.q('#empty-reset').click();catalog.change('#audience-filter','unisex');assert(catalog.q('#products-count').textContent.includes('/ 9'));
+assert.deepEqual(catalog.errors,[]);catalog.dom.window.close();
+const gift=await mount('catalog.html','catalog.html?category=gifts&budget=under30');
+assert.equal(gift.all('.product-card').length,3);assert(gift.q('#products-count').textContent.includes('Подборка'));
+gift.dom.window.close();
+const product=await mount('products/tokim-3/index.html','products/tokim-3/','catalog.html?material=leather&sort=price-asc');
+await until(()=>product.all('[data-slot="accordion-trigger"]').length===1);
+assert.equal(product.q('#product-title').textContent,'TOKIM 3');
+assert(product.q('.breadcrumbs a[href*="catalog"]').href.endsWith('catalog.html?material=leather&sort=price-asc'));
+assert(product.q('.skip-link').href.endsWith('/products/tokim-3/#main'),'Skip link stays on the product page');
+product.q('[data-photo="4"]').click();assert.equal(product.q('#photo-counter').textContent,'5 / 5');
+product.q('#open-photo').click();assert(product.q('#photo-dialog').open);
+product.q('#photo-dialog').dispatchEvent(new product.w.KeyboardEvent('keydown',{key:'ArrowRight',bubbles:true}));
+assert.equal(product.q('#photo-counter').textContent,'1 / 5');
+product.q('#photo-close').click();assert(!product.q('#photo-dialog').open);
+assert.equal(product.w.document.activeElement.id,'open-photo');
+const trigger=product.q('[data-slot="accordion-trigger"]');trigger.click();await until(()=>trigger.getAttribute('aria-expanded')==='true');
+product.q('[data-lang="en"]').click();await until(()=>product.q('[data-slot="accordion-trigger"]').textContent.includes('Smooth'));
+assert.equal(product.q('[data-slot="accordion-trigger"]').getAttribute('aria-expanded'),'true');
+assert(product.q('#product-description').textContent.includes('32 × 34 cm'));
+assert(new URL(product.q('#product-order').href).searchParams.get('text').includes('TOKIM 3'));
+assert(new URL(product.q('#ask-photo').href).searchParams.get('text').includes('more photographs'));
+product.q('#share-product').click();await until(()=>product.w.testClipboard&&product.q('#toast').textContent.includes('copied'));
+assert.equal(product.w.testClipboard,'http://127.0.0.1:8081/products/tokim-3/');
+assert.deepEqual(product.errors,[]);product.dom.window.close();
+console.log('PASS: standalone home/catalog/product pages; budget picker, matching assortment & language state; direct URLs; saved filters; search/sort/gifts; gallery/keyboard/full photo; source/order/share links; Watermelon care & language state; mobile menu.');

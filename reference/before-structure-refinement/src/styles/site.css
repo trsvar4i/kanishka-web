@@ -1,0 +1,7 @@
+/* Kanishka: editorial system. Foundations are shared across all three languages. */
+@import './fonts.css';
+@import './foundations.css';
+@import './navigation.css';
+@import './catalog.css';
+@import './home.css';
+@import './product.css';

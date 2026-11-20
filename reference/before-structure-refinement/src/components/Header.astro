@@ -1,0 +1,26 @@
+---
+import BrandMark from './BrandMark.astro';
+import {translations} from '../data/translations';
+import {languages,type Lang} from '../lib/types';
+import {pathFor} from '../lib/i18n';
+interface Props {lang:Lang;route:string;page:string}
+const {lang,route,page}=Astro.props;
+const c=translations[lang];
+const navigation=[{href:pathFor(lang,'catalog/'),key:'navCatalog'},{href:pathFor(lang)+'#philosophy',key:'navAbout'},{href:pathFor(lang)+'#gifts',key:'navGifts'},{href:pathFor(lang)+'#branches',key:'navStores'}] as const;
+---
+<a class="skip-link" href="#main">{c.skip}</a>
+<header class="header">
+  <a class="brand" href={pathFor(lang)} aria-label={`Kanishka — ${c.home}`}><BrandMark decorative/></a>
+  <nav class="desktop-nav" aria-label={c.mainNav}>
+    {navigation.map(({href,key})=><a href={href} aria-current={page==='catalog'&&key==='navCatalog'?'page':undefined}>{c[key]}</a>)}
+  </nav>
+  <div class="header-controls">
+    <div class="language-switch" aria-label="Language">{languages.map(locale=><a href={pathFor(locale,route)} data-lang={locale} data-language-link aria-current={locale===lang?'page':undefined} lang={locale} aria-label={locale==='ru'?'Русский':locale==='uz'?'O‘zbekcha':'English'}>{locale.toUpperCase()}</a>)}</div>
+    <a class="header-contact" href="https://t.me/kanishka_admin" target="_blank" rel="noopener">{c.contact}<span aria-hidden="true"> ↗</span></a>
+    <button id="menu-toggle" class="menu-toggle" aria-label={c.menu} data-open-label={c.menu} data-close-label={c.menuClose} aria-expanded="false" aria-controls="mobile-nav"><span></span><span></span></button>
+  </div>
+  <nav id="mobile-nav" class="mobile-nav" hidden aria-label={c.mobileNav}>
+    {navigation.map(({href,key})=><a href={href}>{c[key]}</a>)}
+    <a href="https://t.me/kanishka_admin" target="_blank" rel="noopener">Telegram ↗</a>
+  </nav>
+</header>
