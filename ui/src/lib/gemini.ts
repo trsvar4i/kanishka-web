@@ -128,8 +128,13 @@ async function callGeminiApi(
     },
   };
 
-  // Try gemini-2.5-flash first, then fallback to gemini-1.5-flash
-  const models = ['gemini-2.5-flash', 'gemini-1.5-flash'];
+  // Use working production Gemini models with fallback
+  const models = [
+    'gemini-flash-lite-latest',
+    'gemini-flash-latest',
+    'gemini-2.5-flash-lite',
+    'gemini-2.5-flash',
+  ];
   let lastError: any = null;
 
   for (const model of models) {
