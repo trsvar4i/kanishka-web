@@ -4,7 +4,7 @@ import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
   output: 'static',
-  outDir: '../dist',
+  outDir: process.env.VERCEL ? './dist' : '../dist',
   site: process.env.PUBLIC_SITE_URL || undefined,
   base: process.env.PUBLIC_BASE_PATH || undefined,
   integrations: [react()],
