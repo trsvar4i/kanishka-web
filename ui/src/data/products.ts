@@ -427,7 +427,7 @@ export const products: Product[] = [
   },
   {
     "id": "kan-008",
-    "name": "CHOPON B (2)",
+    "name": "CHOPON",
     "category": "bags",
     "audience": "unisex",
     "material": "leather",
@@ -435,9 +435,9 @@ export const products: Product[] = [
     "isGift": true,
     "giftBudget": "30to80",
     "title": {
-      "ru": "Кожаная сумка CHOPON B (2)",
-      "en": "Leather bag CHOPON B (2)",
-      "uz": "Charm sumka CHOPON B (2)"
+      "ru": "Кожаная сумка CHOPON",
+      "en": "Leather bag CHOPON",
+      "uz": "Charm sumka CHOPON"
     },
     "subtitle": {
       "ru": "Кожаная сумка",
