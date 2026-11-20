@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageCircle, X, Send, Key, ArrowUpRight } from 'lucide-react';
+import { MessageCircle, X, Send, ArrowUpRight, Compass, Sparkles, Gift, ShoppingBag } from 'lucide-react';
 import type { Lang } from '../lib/types';
 import { products } from '../data/products';
 import { formatPrice, productPath } from '../lib/products';
@@ -9,24 +9,104 @@ interface AiAssistantProps {
   lang?: Lang;
 }
 
-const QUICK_PROMPTS: Record<Lang, string[]> = {
+interface QuestionCard {
+  id: string;
+  title: string;
+  subtitle: string;
+  prompt: string;
+  icon: 'bag' | 'sparkles' | 'compass' | 'gift';
+}
+
+const READY_QUESTIONS: Record<Lang, QuestionCard[]> = {
   ru: [
-    'Сумка на каждый день',
-    'Кожаный рюкзак',
-    'Расскажи про сумку ZARAFOT',
-    'Что выбрать в подарок?',
+    {
+      id: 'q1',
+      title: 'Сумка на каждый день',
+      subtitle: 'Подбор по практичности, форме и материалу',
+      prompt: 'Посоветуй удобную и практичную сумку на каждый день',
+      icon: 'bag',
+    },
+    {
+      id: 'q2',
+      title: 'О знаковой сумке ZARAFOT',
+      subtitle: 'Размеры, мягкая красная кожа и посадка на плече',
+      prompt: 'Расскажи подробнее о сумке ZARAFOT: размеры, кожа и особенности',
+      icon: 'sparkles',
+    },
+    {
+      id: 'q3',
+      title: 'Вместительный рюкзак для города',
+      subtitle: 'Кожа или деним для документов и вещей',
+      prompt: 'Какой рюкзак лучше выбрать для города, работы и поездок?',
+      icon: 'compass',
+    },
+    {
+      id: 'q4',
+      title: 'Идеи подарков мастерской',
+      subtitle: 'Портмоне, аксессуары и сумки по бюджету',
+      prompt: 'Что посоветуешь выбрать в подарок из коллекции Kanishka?',
+      icon: 'gift',
+    },
   ],
   uz: [
-    'Har kunga sumka',
-    'Charm ryukzak',
-    'ZARAFOT sumkasi haqida',
-    'Sovg‘aga nima bor?',
+    {
+      id: 'q1',
+      title: 'Har kunga qulay sumka',
+      subtitle: 'Shakl, qulaylik va material bo‘yicha tanlov',
+      prompt: 'Har kunlik uchun qulay sumka tavsiya qiling',
+      icon: 'bag',
+    },
+    {
+      id: 'q2',
+      title: 'ZARAFOT sumkasi haqida',
+      subtitle: 'Yumshoq qizil charm, o‘lchamlar va detallar',
+      prompt: 'ZARAFOT sumkasi haqida batafsil aytib bering',
+      icon: 'sparkles',
+    },
+    {
+      id: 'q3',
+      title: 'Shahar uchun keng ryukzak',
+      subtitle: 'Hujjatlar va safarlar uchun charm yoki denim',
+      prompt: 'Shahar va ish uchun qanday ryukzak ma’qul?',
+      icon: 'compass',
+    },
+    {
+      id: 'q4',
+      title: 'Sovg‘a uchun g‘oyalar',
+      subtitle: 'Hamyonlar, aksessuarlar va sumkalar',
+      prompt: 'Kanishka to‘plamidan sovg‘aga nima tanlashni maslahat berasiz?',
+      icon: 'gift',
+    },
   ],
   en: [
-    'Everyday shoulder bag',
-    'Leather backpack',
-    'Tell me about ZARAFOT',
-    'Gift ideas under 600,000 UZS',
+    {
+      id: 'q1',
+      title: 'Everyday shoulder bag',
+      subtitle: 'Curated by comfort, form and daily essentials',
+      prompt: 'Recommend a comfortable everyday bag from the collection',
+      icon: 'bag',
+    },
+    {
+      id: 'q2',
+      title: 'About the iconic ZARAFOT bag',
+      subtitle: 'Soft red leather drape, dimensions and features',
+      prompt: 'Tell me more about the ZARAFOT bag: leather, size and fit',
+      icon: 'sparkles',
+    },
+    {
+      id: 'q3',
+      title: 'Spacious city backpack',
+      subtitle: 'Leather or denim for work, gear and commute',
+      prompt: 'Which backpack is best for daily commute and travel?',
+      icon: 'compass',
+    },
+    {
+      id: 'q4',
+      title: 'Atelier gift ideas',
+      subtitle: 'Wallets, small leather goods and statement bags',
+      prompt: 'What gift do you recommend from the Kanishka workshop?',
+      icon: 'gift',
+    },
   ],
 };
 
@@ -38,77 +118,43 @@ const UI_TEXT: Record<
     subtitle: string;
     placeholder: string;
     send: string;
-    settingsHint: string;
-    keyPlaceholder: string;
-    saveKey: string;
-    saved: string;
     welcome: string;
-    geminiLive: string;
-    offlineMode: string;
-    inspect: string;
   }
 > = {
   ru: {
     btnLabel: 'Ассистент Kanishka',
-    title: 'KANIШKA · АССИСТЕНТ',
+    title: 'KANIШKA АССИСТЕНТ',
     subtitle: 'Консультант авторской мастерской',
     placeholder: 'Спросите о товаре, размере или материале...',
     send: 'Отправить',
-    settingsHint: 'Подключите Gemini API Key для живого диалога с Google Gemini (или укажите PUBLIC_GEMINI_API_KEY в .env):',
-    keyPlaceholder: 'Вставьте ваш AI Studio ключ (AIza...)',
-    saveKey: 'Сохранить',
-    saved: 'Сохранено!',
     welcome:
       'Я ассистент Kanishka! Готов посоветовать вам подходящую вещь или рассказать о товаре подробнее.\n\nЧто вас интересует — кожаная сумка, вместительный рюкзак или подарок?',
-    geminiLive: 'Gemini AI',
-    offlineMode: 'Мастерская',
-    inspect: 'Рассмотреть',
   },
   uz: {
     btnLabel: 'Kanishka yordamchisi',
-    title: 'KANIШKA · YORDAMCHI',
+    title: 'KANIШKA YORDAMCHI',
     subtitle: 'Ustaxona shaxsiy maslahatchisi',
     placeholder: 'Mahsulot, o‘lcham yoki material haqida so‘rang...',
     send: 'Yuborish',
-    settingsHint: 'Google Gemini jonli sun’iy intellekti uchun API kalitingizni kiriting:',
-    keyPlaceholder: 'API kalit (AIza...)',
-    saveKey: 'Saqlash',
-    saved: 'Saqlandi!',
     welcome:
       'Men Kanishka yordamchisiman! Sizga mos buyum tanlashda yordam berishga yoki mahsulot haqida batafsil aytib berishga tayyorman.\n\nSizni nima qiziqtiradi — charm sumka, ryukzak yoki sovg‘a?',
-    geminiLive: 'Gemini AI',
-    offlineMode: 'Ustaxona',
-    inspect: 'Ko‘rish',
   },
   en: {
     btnLabel: 'Kanishka Assistant',
-    title: 'KANIШKA · ASSISTANT',
+    title: 'KANIШKA ASSISTANT',
     subtitle: 'Artisanal atelier advisor',
     placeholder: 'Ask about items, sizes, or materials...',
     send: 'Send',
-    settingsHint: 'Connect your Gemini API Key to enable live conversational AI:',
-    keyPlaceholder: 'Paste your AI Studio Key (AIza...)',
-    saveKey: 'Save',
-    saved: 'Saved!',
     welcome:
       'I am Kanishka’s assistant! I’m ready to recommend the right piece or share more details about our handcrafted items.\n\nWhat are you looking for — a leather bag, a spacious backpack, or a thoughtful gift?',
-    geminiLive: 'Gemini AI',
-    offlineMode: 'Atelier',
-    inspect: 'View item',
   },
 };
 
 export default function AiAssistant({ lang = 'ru' }: AiAssistantProps) {
   const t = UI_TEXT[lang] || UI_TEXT.ru;
-  const quickPrompts = QUICK_PROMPTS[lang] || QUICK_PROMPTS.ru;
+  const questionCards = READY_QUESTIONS[lang] || READY_QUESTIONS.ru;
 
   const [isOpen, setIsOpen] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
-  const [apiKey, setApiKey] = useState('');
-  const [keyInput, setKeyInput] = useState('');
-  const [keySavedBadge, setKeySavedBadge] = useState(false);
-  const [hasEnvKey, setHasEnvKey] = useState(false);
-
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -118,26 +164,11 @@ export default function AiAssistant({ lang = 'ru' }: AiAssistantProps) {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const storedKey = localStorage.getItem('kanishka_gemini_api_key') || '';
-      const envKey =
-        typeof import.meta !== 'undefined' && import.meta.env
-          ? (import.meta.env.PUBLIC_GEMINI_API_KEY as string) || ''
-          : '';
-
-      if (storedKey) {
-        setApiKey(storedKey);
-        setKeyInput(storedKey);
-      }
-      if (envKey) {
-        setHasEnvKey(true);
-      }
-
       setMessages([
         {
           id: 'welcome-msg',
           role: 'model',
           content: t.welcome,
-          suggestedProductIds: ['kan-002', 'kan-001'],
           timestamp: Date.now(),
         },
       ]);
@@ -152,24 +183,6 @@ export default function AiAssistant({ lang = 'ru' }: AiAssistantProps) {
       setTimeout(() => inputRef.current?.focus(), 150);
     }
   }, [isOpen, messages.length, isLoading]);
-
-  const handleSaveKey = (e: React.SyntheticEvent) => {
-    e.preventDefault();
-    const trimmed = keyInput.trim();
-    setApiKey(trimmed);
-    if (typeof window !== 'undefined') {
-      if (trimmed) {
-        localStorage.setItem('kanishka_gemini_api_key', trimmed);
-      } else {
-        localStorage.removeItem('kanishka_gemini_api_key');
-      }
-    }
-    setKeySavedBadge(true);
-    setTimeout(() => {
-      setKeySavedBadge(false);
-      setShowSettings(false);
-    }, 1200);
-  };
 
   const handleSend = async (textToSend?: string) => {
     const promptText = (textToSend || input).trim();
@@ -189,7 +202,13 @@ export default function AiAssistant({ lang = 'ru' }: AiAssistantProps) {
     setIsLoading(true);
 
     try {
-      const activeKey = apiKey || (hasEnvKey ? (import.meta.env.PUBLIC_GEMINI_API_KEY as string) : '');
+      const activeKey =
+        (typeof window !== 'undefined' ? localStorage.getItem('kanishka_gemini_api_key') : null) ||
+        (typeof import.meta !== 'undefined' && import.meta.env
+          ? (import.meta.env.PUBLIC_GEMINI_API_KEY as string)
+          : '') ||
+        '';
+
       const reply = await askGemini(newHistory, promptText, lang, activeKey);
 
       const modelMsg: ChatMessage = {
@@ -208,7 +227,8 @@ export default function AiAssistant({ lang = 'ru' }: AiAssistantProps) {
         {
           id: `err-${Date.now()}`,
           role: 'model',
-          content: 'Произошла небольшая заминка при связи. Задайте вопрос ещё раз или напишите нам в Telegram @kanishka_dsgn.',
+          content:
+            'Произошла небольшая заминка при связи. Задайте вопрос ещё раз или напишите нам в Telegram @kanishka_dsgn.',
           timestamp: Date.now(),
         },
       ]);
@@ -217,11 +237,24 @@ export default function AiAssistant({ lang = 'ru' }: AiAssistantProps) {
     }
   };
 
-  const isGeminiActive = Boolean(apiKey || hasEnvKey);
+  const renderIcon = (type: QuestionCard['icon']) => {
+    switch (type) {
+      case 'bag':
+        return <ShoppingBag size={18} />;
+      case 'sparkles':
+        return <Sparkles size={18} />;
+      case 'compass':
+        return <Compass size={18} />;
+      case 'gift':
+        return <Gift size={18} />;
+      default:
+        return <MessageCircle size={18} />;
+    }
+  };
 
   return (
     <div className="ai-widget-container" aria-label="Kanishka Assistant">
-      {/* Floating Trigger Button - Bright Red Brand Pill with Chat Icon */}
+      {/* Floating Trigger Button - Liquid Glassmorphism */}
       {!isOpen && (
         <button
           type="button"
@@ -244,69 +277,59 @@ export default function AiAssistant({ lang = 'ru' }: AiAssistantProps) {
           <div className="ai-chat-header">
             <div className="ai-header-info">
               <div className="ai-header-badge" aria-hidden="true">
-                <MessageCircle size={19} strokeWidth={2.2} />
+                <MessageCircle size={18} strokeWidth={2} />
               </div>
               <div className="ai-header-titles">
                 <h3>{t.title}</h3>
-                <div className="ai-header-subrow">
-                  <span className="ai-header-subtext">{t.subtitle}</span>
-                  <span className="ai-status-divider">·</span>
-                  <span className="ai-status-pill">
-                    <span className={`ai-status-dot ${isGeminiActive ? 'active' : ''}`} />
-                    <span>{isGeminiActive ? t.geminiLive : t.offlineMode}</span>
-                  </span>
-                </div>
+                <p className="ai-header-subtext">{t.subtitle}</p>
               </div>
             </div>
 
             <div className="ai-header-actions">
               <button
                 type="button"
-                className="ai-icon-btn"
-                title="Настройки Gemini API"
-                aria-label="Настройки Gemini API"
-                onClick={() => setShowSettings(!showSettings)}
-              >
-                <Key size={16} />
-              </button>
-              <button
-                type="button"
-                className="ai-icon-btn"
+                className="ai-icon-btn ai-close-btn"
                 title="Закрыть"
                 aria-label="Закрыть диалог"
                 onClick={() => setIsOpen(false)}
               >
-                <X size={18} />
+                <X size={19} />
               </button>
             </div>
           </div>
 
-          {/* Settings Drawer */}
-          {showSettings && (
-            <div className="ai-settings-drawer">
-              <p>{t.settingsHint}</p>
-              <form onSubmit={handleSaveKey} className="ai-settings-input-group">
-                <input
-                  type="password"
-                  className="ai-settings-input"
-                  placeholder={t.keyPlaceholder}
-                  value={keyInput}
-                  onChange={(e) => setKeyInput(e.target.value)}
-                />
-                <button type="submit" className="ai-settings-save">
-                  {keySavedBadge ? t.saved : t.saveKey}
-                </button>
-              </form>
-            </div>
-          )}
-
           {/* Messages */}
           <div className="ai-messages-area">
-            {messages.map((msg) => (
+            {messages.map((msg, idx) => (
               <div key={msg.id} className={`ai-message ${msg.role}`}>
                 <div className="ai-bubble">{msg.content}</div>
 
-                {/* Product Recommendations */}
+                {/* Initial Welcome Screen: Ready-made Question Cards in exact same card style */}
+                {idx === 0 && messages.length === 1 && (
+                  <div className="ai-questions-preview">
+                    {questionCards.map((q) => (
+                      <button
+                        key={q.id}
+                        type="button"
+                        className="ai-product-chip ai-question-card"
+                        onClick={() => handleSend(q.prompt)}
+                      >
+                        <div className="ai-question-icon" aria-hidden="true">
+                          {renderIcon(q.icon)}
+                        </div>
+                        <div className="ai-product-details">
+                          <div className="ai-product-name">{q.title}</div>
+                          <div className="ai-product-meta">{q.subtitle}</div>
+                        </div>
+                        <span className="ai-product-link-btn" aria-hidden="true">
+                          <ArrowUpRight size={17} />
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {/* Subsequent Bot Messages: Product Recommendations if any */}
                 {msg.suggestedProductIds && msg.suggestedProductIds.length > 0 && (
                   <div className="ai-products-preview">
                     {msg.suggestedProductIds.map((prodId) => {
@@ -368,22 +391,6 @@ export default function AiAssistant({ lang = 'ru' }: AiAssistantProps) {
 
             <div ref={messagesEndRef} />
           </div>
-
-          {/* Quick Prompts Carousel */}
-          {messages.length <= 2 && (
-            <div className="ai-quick-prompts">
-              {quickPrompts.map((promptText, i) => (
-                <button
-                  key={i}
-                  type="button"
-                  className="ai-chip-btn"
-                  onClick={() => handleSend(promptText)}
-                >
-                  {promptText}
-                </button>
-              ))}
-            </div>
-          )}
 
           {/* Input Form */}
           <form

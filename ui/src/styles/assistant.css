@@ -110,9 +110,9 @@ body[data-page="product"] .ai-widget-container {
   bottom: calc(100% + 14px);
   width: 410px;
   max-width: calc(100vw - 32px);
-  height: 610px;
+  height: 620px;
   max-height: calc(100vh - 96px);
-  background: rgba(26, 27, 22, 0.92);
+  background: rgba(26, 27, 22, 0.94);
   backdrop-filter: blur(28px) saturate(180%);
   -webkit-backdrop-filter: blur(28px) saturate(180%);
   border: 1px solid rgba(255, 255, 255, 0.18);
@@ -136,7 +136,7 @@ body[data-page="product"] .ai-widget-container {
   }
 }
 
-/* Header */
+/* Header - Clean, No Red Badge, No Dots, Only Close X */
 .ai-chat-header {
   display: flex;
   align-items: center;
@@ -156,11 +156,12 @@ body[data-page="product"] .ai-widget-container {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
-  background: var(--red, #b52b30);
+  width: 34px;
+  height: 34px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   color: #ffffff;
-  border-radius: 9px;
+  border-radius: 8px;
   flex-shrink: 0;
 }
 
@@ -168,124 +169,41 @@ body[data-page="product"] .ai-widget-container {
   margin: 0;
   font-family: var(--display, 'Roboto Condensed', sans-serif);
   font-size: 15px;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   color: #ffffff;
   line-height: 1.2;
   font-weight: 600;
 }
 
-.ai-header-subrow {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 3px;
-  font-size: 12px;
-}
-
 .ai-header-subtext {
+  margin: 2px 0 0;
+  font-size: 12px;
   color: #b9baae;
-}
-
-.ai-status-divider {
-  color: #63645b;
-}
-
-.ai-status-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 1px 7px;
-  background: #2e3027;
-  border: 1px solid #45473b;
-  border-radius: 10px;
-  font-size: 11px;
-  color: #d1cfc7;
-}
-
-.ai-status-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #8b8c82;
-}
-
-.ai-status-dot.active {
-  background: #34d399;
 }
 
 .ai-header-actions {
   display: flex;
   align-items: center;
-  gap: 6px;
 }
 
-.ai-icon-btn {
+.ai-close-btn {
   background: transparent;
   border: none;
-  color: #b9baae;
+  color: #d1cfc7;
   cursor: pointer;
-  padding: 7px;
-  border-radius: 6px;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: color 0.15s, background 0.15s;
 }
 
-.ai-icon-btn:hover {
+.ai-close-btn:hover {
   color: #ffffff;
-  background: #34362d;
-}
-
-/* Settings Drawer */
-.ai-settings-drawer {
-  padding: 14px 18px;
-  background: #171814;
-  border-bottom: 1px solid #3c3e34;
-  font-size: 13px;
-  color: #b9baae;
-}
-
-.ai-settings-drawer p {
-  margin: 0 0 10px;
-  line-height: 1.45;
-}
-
-.ai-settings-input-group {
-  display: flex;
-  gap: 8px;
-}
-
-.ai-settings-input {
-  flex: 1;
-  background: #23251e;
-  border: 1px solid #434539;
-  border-radius: 6px;
-  padding: 8px 12px;
-  font-size: 12px;
-  color: #ffffff;
-  outline: none;
-}
-
-.ai-settings-input:focus {
-  border-color: var(--red, #b52b30);
-}
-
-.ai-settings-save {
-  padding: 8px 14px;
-  background: var(--red, #b52b30);
-  color: #ffffff;
-  border: none;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-
-.ai-settings-save:hover {
-  background: #992128;
+  background: rgba(255, 255, 255, 0.12);
 }
 
 /* Chat Messages Area */
@@ -297,7 +215,7 @@ body[data-page="product"] .ai-widget-container {
   flex-direction: column;
   gap: 14px;
   scroll-behavior: smooth;
-  background: #1e1f1a;
+  background: #1c1d18;
 }
 
 .ai-messages-area::-webkit-scrollbar {
@@ -313,7 +231,7 @@ body[data-page="product"] .ai-widget-container {
 .ai-message {
   display: flex;
   flex-direction: column;
-  max-width: 92%;
+  max-width: 95%;
   gap: 8px;
 }
 
@@ -352,19 +270,20 @@ body[data-page="product"] .ai-widget-container {
   font-weight: 600;
 }
 
-/* Product Cards Carousel / Grid in chat */
+/* Ready-Made Question Cards (Same Card Format as Products) */
+.ai-questions-preview,
 .ai-products-preview {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  margin-top: 2px;
+  margin-top: 4px;
 }
 
 .ai-product-chip {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 14px;
+  padding: 11px 14px;
   background: #23251e;
   border: 1px solid #414337;
   border-radius: 10px;
@@ -373,15 +292,41 @@ body[data-page="product"] .ai-widget-container {
   transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
 }
 
-.ai-product-chip:hover {
+.ai-question-card {
+  text-align: left;
+  cursor: pointer;
+  width: 100%;
+}
+
+.ai-product-chip:hover,
+.ai-question-card:hover {
   transform: translateY(-2px);
-  border-color: var(--red, #b52b30);
+  border-color: rgba(255, 255, 255, 0.4);
   background: #2b2d24;
 }
 
+.ai-question-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #f1ede2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s;
+}
+
+.ai-question-card:hover .ai-question-icon {
+  background: rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+}
+
 .ai-product-thumb {
-  width: 54px;
-  height: 54px;
+  width: 50px;
+  height: 50px;
   object-fit: cover;
   border-radius: 6px;
   background: #141512;
@@ -394,12 +339,10 @@ body[data-page="product"] .ai-widget-container {
 }
 
 .ai-product-name {
-  font-family: var(--display, 'Roboto Condensed', sans-serif);
-  font-size: 15px;
-  font-weight: 600;
-  text-transform: uppercase;
+  font-family: var(--sans, 'PT Sans', sans-serif);
+  font-size: 14.5px;
+  font-weight: 700;
   color: #ffffff;
-  letter-spacing: 0.02em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -439,41 +382,9 @@ body[data-page="product"] .ai-widget-container {
   transition: background 0.15s, color 0.15s;
 }
 
-.ai-product-chip:hover .ai-product-link-btn {
-  background: var(--red, #b52b30);
-  color: #ffffff;
-}
-
-/* Quick Prompts Bar */
-.ai-quick-prompts {
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  padding: 10px 16px 12px;
-  border-top: 1px solid #33352b;
-  background: #1e1f1a;
-  scrollbar-width: none;
-}
-
-.ai-quick-prompts::-webkit-scrollbar {
-  display: none;
-}
-
-.ai-chip-btn {
-  background: #282a22;
-  color: #f1ede2;
-  border: 1px solid #4a4c40;
-  border-radius: 20px;
-  padding: 7px 13px;
-  font-size: 12.5px;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: background 0.15s, border-color 0.15s, color 0.15s;
-}
-
-.ai-chip-btn:hover {
-  background: var(--red, #b52b30);
-  border-color: var(--red, #b52b30);
+.ai-product-chip:hover .ai-product-link-btn,
+.ai-question-card:hover .ai-product-link-btn {
+  background: rgba(255, 255, 255, 0.2);
   color: #ffffff;
 }
 
@@ -500,7 +411,7 @@ body[data-page="product"] .ai-widget-container {
 }
 
 .ai-chat-input:focus {
-  border-color: var(--red, #b52b30);
+  border-color: rgba(255, 255, 255, 0.45);
 }
 
 .ai-chat-input::placeholder {
