@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Sparkles, X, Send, Key, ChevronRight } from 'lucide-react';
+import { MessageCircle, X, Send, Key, ArrowUpRight } from 'lucide-react';
 import type { Lang } from '../lib/types';
 import { products } from '../data/products';
 import { formatPrice, productPath } from '../lib/products';
@@ -13,14 +13,14 @@ const QUICK_PROMPTS: Record<Lang, string[]> = {
   ru: [
     'Сумка на каждый день',
     'Кожаный рюкзак',
-    'Особенности сумки ZARAFOT',
-    'Подарок до 600 000 сум',
+    'Расскажи про сумку ZARAFOT',
+    'Что выбрать в подарок?',
   ],
   uz: [
     'Har kunga sumka',
     'Charm ryukzak',
     'ZARAFOT sumkasi haqida',
-    'Sovg‘a 600 000 so‘mgacha',
+    'Sovg‘aga nima bor?',
   ],
   en: [
     'Everyday shoulder bag',
@@ -45,56 +45,56 @@ const UI_TEXT: Record<
     welcome: string;
     geminiLive: string;
     offlineMode: string;
-    viewProduct: string;
+    inspect: string;
   }
 > = {
   ru: {
-    btnLabel: 'Подбор сумок',
-    title: 'Консультант Kanishka',
-    subtitle: 'AI-подбор сумок и рюкзаков',
-    placeholder: 'Спросите о сумке, размере или материале...',
+    btnLabel: 'Ассистент Kanishka',
+    title: 'KANIШKA · АССИСТЕНТ',
+    subtitle: 'Консультант авторской мастерской',
+    placeholder: 'Спросите о товаре, размере или материале...',
     send: 'Отправить',
-    settingsHint: 'Для живого ИИ от Google подключите Gemini API Key (или укажите PUBLIC_GEMINI_API_KEY в .env):',
+    settingsHint: 'Подключите Gemini API Key для живого диалога с Google Gemini (или укажите PUBLIC_GEMINI_API_KEY в .env):',
     keyPlaceholder: 'Вставьте ваш AI Studio ключ (AIza...)',
     saveKey: 'Сохранить',
     saved: 'Сохранено!',
     welcome:
-      'Здравствуйте! Я помогу подобрать авторскую сумку или рюкзак Kanishka. Расскажите, что вы ищете — на каждый день, в дорогу или в подарок?',
-    geminiLive: 'Gemini AI активен',
-    offlineMode: 'Локальный советник',
-    viewProduct: 'Рассмотреть',
+      'Я ассистент Kanishka! Готов посоветовать вам подходящую вещь или рассказать о товаре подробнее.\n\nЧто вас интересует — кожаная сумка, вместительный рюкзак или подарок?',
+    geminiLive: 'Gemini AI',
+    offlineMode: 'Мастерская',
+    inspect: 'Рассмотреть',
   },
   uz: {
-    btnLabel: 'Sumkalar tanlovi',
-    title: 'Kanishka maslahatchisi',
-    subtitle: 'Sumkalar va ryukzaklar tanlovi',
-    placeholder: 'Sumka, o‘lcham yoki material haqida so‘rang...',
+    btnLabel: 'Kanishka yordamchisi',
+    title: 'KANIШKA · YORDAMCHI',
+    subtitle: 'Ustaxona shaxsiy maslahatchisi',
+    placeholder: 'Mahsulot, o‘lcham yoki material haqida so‘rang...',
     send: 'Yuborish',
-    settingsHint: 'Google jonli sun’iy intellekti uchun Gemini API kalitini kiriting:',
-    keyPlaceholder: 'API kalitni kiriting (AIza...)',
+    settingsHint: 'Google Gemini jonli sun’iy intellekti uchun API kalitingizni kiriting:',
+    keyPlaceholder: 'API kalit (AIza...)',
     saveKey: 'Saqlash',
     saved: 'Saqlandi!',
     welcome:
-      'Assalomu alaykum! Kanishka to‘plamidan sumka yoki ryukzak tanlashda yordam beraman. Har kunlik, safar yoki sovg‘a uchun nima qidiryapsiz?',
-    geminiLive: 'Gemini AI faol',
-    offlineMode: 'Lokal maslahatchi',
-    viewProduct: 'Ko‘rish',
+      'Men Kanishka yordamchisiman! Sizga mos buyum tanlashda yordam berishga yoki mahsulot haqida batafsil aytib berishga tayyorman.\n\nSizni nima qiziqtiradi — charm sumka, ryukzak yoki sovg‘a?',
+    geminiLive: 'Gemini AI',
+    offlineMode: 'Ustaxona',
+    inspect: 'Ko‘rish',
   },
   en: {
-    btnLabel: 'Bag Advisor',
-    title: 'Kanishka Advisor',
-    subtitle: 'Artisanal bags & backpacks',
-    placeholder: 'Ask about sizes, styles, or materials...',
+    btnLabel: 'Kanishka Assistant',
+    title: 'KANIШKA · ASSISTANT',
+    subtitle: 'Artisanal atelier advisor',
+    placeholder: 'Ask about items, sizes, or materials...',
     send: 'Send',
-    settingsHint: 'Connect your Gemini API Key to enable live Google Gemini intelligence:',
+    settingsHint: 'Connect your Gemini API Key to enable live conversational AI:',
     keyPlaceholder: 'Paste your AI Studio Key (AIza...)',
     saveKey: 'Save',
     saved: 'Saved!',
     welcome:
-      'Hello! I can guide you through Kanishka’s handcrafted bags and backpacks. Are you looking for an everyday companion, a travel piece, or a thoughtful gift?',
-    geminiLive: 'Gemini AI Live',
-    offlineMode: 'Curated Advisor',
-    viewProduct: 'Inspect',
+      'I am Kanishka’s assistant! I’m ready to recommend the right piece or share more details about our handcrafted items.\n\nWhat are you looking for — a leather bag, a spacious backpack, or a thoughtful gift?',
+    geminiLive: 'Gemini AI',
+    offlineMode: 'Atelier',
+    inspect: 'View item',
   },
 };
 
@@ -116,7 +116,6 @@ export default function AiAssistant({ lang = 'ru' }: AiAssistantProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Initialize keys and welcome message
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const storedKey = localStorage.getItem('kanishka_gemini_api_key') || '';
@@ -207,7 +206,7 @@ export default function AiAssistant({ lang = 'ru' }: AiAssistantProps) {
         {
           id: `err-${Date.now()}`,
           role: 'model',
-          content: 'Произошла небольшая заминка при связи. Попробуйте еще раз или напишите нам в Telegram @kanishka_dsgn.',
+          content: 'Произошла небольшая заминка при связи. Задайте вопрос ещё раз или напишите нам в Telegram @kanishka_dsgn.',
           timestamp: Date.now(),
         },
       ]);
@@ -219,8 +218,8 @@ export default function AiAssistant({ lang = 'ru' }: AiAssistantProps) {
   const isGeminiActive = Boolean(apiKey || hasEnvKey);
 
   return (
-    <div className="ai-widget-container" aria-label="Kanishka Bag Advisor Widget">
-      {/* Floating Trigger Button */}
+    <div className="ai-widget-container" aria-label="Kanishka Assistant">
+      {/* Floating Trigger Button - Bright Red Brand Pill with Chat Icon */}
       {!isOpen && (
         <button
           type="button"
@@ -230,7 +229,7 @@ export default function AiAssistant({ lang = 'ru' }: AiAssistantProps) {
           aria-controls="ai-chat-window"
         >
           <span className="ai-trigger-icon" aria-hidden="true">
-            <Sparkles size={15} />
+            <MessageCircle size={20} strokeWidth={2.2} />
           </span>
           <span className="ai-trigger-label">{t.btnLabel}</span>
         </button>
@@ -243,14 +242,17 @@ export default function AiAssistant({ lang = 'ru' }: AiAssistantProps) {
           <div className="ai-chat-header">
             <div className="ai-header-info">
               <div className="ai-header-badge" aria-hidden="true">
-                <Sparkles size={18} />
+                <MessageCircle size={19} strokeWidth={2.2} />
               </div>
               <div className="ai-header-titles">
                 <h3>{t.title}</h3>
-                <p>{t.subtitle}</p>
-                <div className="ai-status-pill">
-                  <span className={`ai-status-dot ${isGeminiActive ? 'active' : ''}`} />
-                  <span>{isGeminiActive ? t.geminiLive : t.offlineMode}</span>
+                <div className="ai-header-subrow">
+                  <span className="ai-header-subtext">{t.subtitle}</span>
+                  <span className="ai-status-divider">·</span>
+                  <span className="ai-status-pill">
+                    <span className={`ai-status-dot ${isGeminiActive ? 'active' : ''}`} />
+                    <span>{isGeminiActive ? t.geminiLive : t.offlineMode}</span>
+                  </span>
                 </div>
               </div>
             </div>
@@ -259,20 +261,20 @@ export default function AiAssistant({ lang = 'ru' }: AiAssistantProps) {
               <button
                 type="button"
                 className="ai-icon-btn"
-                title="Gemini API Key"
+                title="Настройки Gemini API"
                 aria-label="Настройки Gemini API"
                 onClick={() => setShowSettings(!showSettings)}
               >
-                <Key size={17} />
+                <Key size={16} />
               </button>
               <button
                 type="button"
                 className="ai-icon-btn"
                 title="Закрыть"
-                aria-label="Закрыть чат"
+                aria-label="Закрыть диалог"
                 onClick={() => setIsOpen(false)}
               >
-                <X size={19} />
+                <X size={18} />
               </button>
             </div>
           </div>
@@ -302,7 +304,7 @@ export default function AiAssistant({ lang = 'ru' }: AiAssistantProps) {
               <div key={msg.id} className={`ai-message ${msg.role}`}>
                 <div className="ai-bubble">{msg.content}</div>
 
-                {/* Suggested Products Preview */}
+                {/* Product Recommendations */}
                 {msg.suggestedProductIds && msg.suggestedProductIds.length > 0 && (
                   <div className="ai-products-preview">
                     {msg.suggestedProductIds.map((prodId) => {
@@ -311,6 +313,12 @@ export default function AiAssistant({ lang = 'ru' }: AiAssistantProps) {
                       const title = prod.title[lang] || prod.title.ru;
                       const path = productPath(prod, lang);
                       const thumb = prod.images[0] || '/assets/images/latest-00.jpg';
+                      const materialName =
+                        prod.material === 'leather'
+                          ? 'Натуральная кожа'
+                          : prod.material === 'textile'
+                          ? 'Канвас / Деним'
+                          : 'Материал мастерской';
 
                       return (
                         <a
@@ -322,11 +330,22 @@ export default function AiAssistant({ lang = 'ru' }: AiAssistantProps) {
                           <img src={thumb} alt={title} className="ai-product-thumb" loading="lazy" />
                           <div className="ai-product-details">
                             <div className="ai-product-name">{prod.name}</div>
+                            <div className="ai-product-meta">
+                              <span>{materialName}</span>
+                              {prod.specs.dimensions && prod.specs.dimensions !== '—' && (
+                                <>
+                                  <span className="ai-meta-dot">·</span>
+                                  <span>{prod.specs.dimensions}</span>
+                                </>
+                              )}
+                            </div>
                             <div className="ai-product-price">
                               {formatPrice(prod.priceUZS, lang)} сум
                             </div>
                           </div>
-                          <ChevronRight size={16} className="ai-product-arrow" />
+                          <span className="ai-product-link-btn" aria-hidden="true">
+                            <ArrowUpRight size={17} />
+                          </span>
                         </a>
                       );
                     })}
@@ -337,7 +356,7 @@ export default function AiAssistant({ lang = 'ru' }: AiAssistantProps) {
 
             {isLoading && (
               <div className="ai-message model">
-                <div className="ai-typing-indicator" aria-label="AI думает...">
+                <div className="ai-typing-indicator" aria-label="Печатает ответ...">
                   <span className="ai-typing-dot" />
                   <span className="ai-typing-dot" />
                   <span className="ai-typing-dot" />
@@ -388,7 +407,7 @@ export default function AiAssistant({ lang = 'ru' }: AiAssistantProps) {
               aria-label={t.send}
               disabled={!input.trim() || isLoading}
             >
-              <Send size={16} />
+              <Send size={15} />
             </button>
           </form>
         </div>
