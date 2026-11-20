@@ -237,7 +237,7 @@ export default function AiAssistant({ lang = 'ru' }: AiAssistantProps) {
           id: `err-${Date.now()}`,
           role: 'model',
           content:
-            'Произошла небольшая заминка при связи. Задайте вопрос ещё раз или напишите нам в Telegram @kanishka_dsgn.',
+            'Произошла небольшая заминка при связи. Пожалуйста, попробуйте задать вопрос ещё раз.',
           timestamp: Date.now(),
         },
       ]);

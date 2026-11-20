@@ -76,7 +76,8 @@ function buildSystemInstruction(lang: Lang): string {
 
 6. МЯГКИЙ ПРИЗЫВ К ЗАКАЗУ (SOFT CLOSE):
    Напоминай, что все вещи Kanishka отшиваются в Ташкенте малыми авторскими сериями, поэтому тиражи быстро заканчиваются.
-   Предлагай забронировать модель или уточнить наличие расцветок в Telegram мастерской Kanishka: @kanishka_dsgn (https://t.me/kanishka_dsgn).
+   СТРОГОЕ ТАБУ НА ВНЕШНИЕ ССЫЛКИ: КАТЕГОРИЧЕСКИ ЗАПРЕЩЕНО вставлять ссылки на Telegram, писать «(https://t.me/kanishka_dsgn)», «@kanishka_dsgn» или любые другие внешние URL в текст ответов!
+   Вместо внешних ссылок предлагай покупателю кликнуть на карточку интересующего товара выше, чтобы рассмотреть детали, или задать вопрос прямо здесь в чате.
 
 Язык ответа: всегда отвечай на языке клиента. Текущий язык: ${lang}.
 
@@ -201,6 +202,14 @@ export function parseProductIds(
     .replace(/\*\*([^*]+)\*\*/g, '$1')
     .replace(/\*([^*]+)\*/g, '$1')
     .replace(/\*\*/g, '')
+    .trim();
+
+  // 7. Strip Telegram links, handles and URLs completely: e.g. (https://t.me/kanishka_dsgn), @kanishka_dsgn
+  cleanText = cleanText
+    .replace(/\(?https?:\/\/t\.me\/[a-zA-Z0-9_/?=.-]+\)?/gi, '')
+    .replace(/@kanishka_dsgn/gi, '')
+    .replace(/\s+([.,!?])/g, '$1')
+    .replace(/[ \t]{2,}/g, ' ')
     .trim();
 
   return { cleanText, productIds };
