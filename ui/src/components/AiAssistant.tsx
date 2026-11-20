@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { MessageCircle, X, Send, ArrowUpRight, Compass, Sparkles, Gift, ShoppingBag } from 'lucide-react';
 import type { Lang } from '../lib/types';
 import { products } from '../data/products';

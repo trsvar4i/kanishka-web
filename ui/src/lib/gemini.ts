@@ -9,69 +9,122 @@ export interface ChatMessage {
   timestamp: number;
 }
 
-const BAGS_CATALOG = products
-  .filter((p) => p.category === 'bags' || p.category === 'accessories')
-  .map((p) => ({
-    id: p.id,
-    name: p.name,
-    category: p.category,
-    material: p.material,
-    dimensions: p.specs.dimensions,
-    priceUZS: p.priceUZS,
-    titleRu: p.title.ru,
-    titleEn: p.title.en,
-    titleUz: p.title.uz,
-    descRu: p.description.ru,
-    descEn: p.description.en,
-    descUz: p.description.uz,
-    detailNote: p.detailNote?.ru || '',
-    slug: p.slug,
-  }));
+// Complete catalog of the atelier (all 12 handcrafted items)
+const KANISHKA_CATALOG = products.map((p) => ({
+  id: p.id,
+  name: p.name,
+  category: p.category,
+  material: p.material,
+  dimensions: p.specs.dimensions,
+  priceUZS: p.priceUZS,
+  titleRu: p.title.ru,
+  titleEn: p.title.en,
+  titleUz: p.title.uz,
+  descRu: p.description.ru,
+  descEn: p.description.en,
+  descUz: p.description.uz,
+  detailNote: p.detailNote?.ru || '',
+  slug: p.slug,
+}));
 
 function buildSystemInstruction(lang: Lang): string {
-  const catalogSummary = BAGS_CATALOG.map(
+  const catalogSummary = KANISHKA_CATALOG.map(
     (b) =>
-      `• [product:${b.id}] ${b.name} (${b.category === 'bags' ? 'Сумка/Рюкзак' : 'Аксессуар'}): цена ${b.priceUZS.toLocaleString('ru-RU')} сум, размер ${b.dimensions}, материал: ${b.material}. Описание: ${b.descRu}. Ключевая фича: ${b.detailNote || 'Авторский крой и премиальная выделка'}`
+      `• [product:${b.id}] ${b.name} (${b.category === 'bags' ? 'Сумка/Рюкзак' : b.category === 'accessories' ? 'Аксессуар' : 'Одежда'}): ТОЧНАЯ ЦЕНА ${b.priceUZS.toLocaleString('ru-RU')} сум, размер ${b.dimensions}, материал: ${b.material}. Описание: ${b.descRu}. Фирменная фича: ${b.detailNote || 'Авторский ручной крой Алексея Маньшаева'}`
   ).join('\n');
 
   return `Ты — персональный стилист-консультант авторской мастерской Kanishka (Ташкент, Узбекистан), основанной дизайнером Алексеем Маньшаевым.
-Твой профиль: безупречный вкус, живая естественная речь без штампов и канцелярита, глубокое знание кожи и материалов, искренняя забота и тактичные экспертные продажи.
+Твой профиль: безупречный вкус, живая естественная речь без штампов, глубокое знание авторских изделий, чуткость к запросу клиента и тактичные экспертные продажи.
 
-ГЛАВНЫЕ ПРАВИЛА ОБЩЕНИЯ И ХАРНЕСС:
+ГЛАВНЫЕ ЗАКОНЫ КОНСУЛЬТАЦИИ И ХАРНЕСС:
 
-1. ЖИВОЙ ТОН И СЛЕНГ:
-   Общайся как внимательный стилист в бутике авторских вещей. Пиши легко, уверенно и дружелюбно.
-   Если клиент пишет неформально («хз что хочу», «не знаю что выбрать», «посоветуй что-нибудь», «хочу что-то прикольное»):
-   - Отреагируй тепло и с пониманием: «Прекрасное состояние! Когда нет жестких рамок, проще всего найти вещь по любви и велению сердца.»
-   - Задай 1–2 простых вопроса, чтобы сузить выбор (например: «Что ближе — сумка на плечо или удобный рюкзак?», «Ищете вещь на каждый день или под особый повод?»).
-   - Сразу предложи 2 контрастных хита с фичами и прикрепи их маркеры [product:ID].
+1. СТРОЖАЙШИЙ ЗАКОН БЮДЖЕТА И ЛИМИТОВ (КРИТИЧЕСКИ ВАЖНО):
+   Если клиент упоминает ЛЮБОЙ лимит, бюджет или ограничение по цене (например: «лимит 300к», «до 500 000 сум», «бюджет 400 тыс», «не дороже 300», «есть 200 000 сум», «до 500», «потолок 450к»):
+   - ТЫ ОБЯЗАН СТРОЖАЙШЕ соблюдать лимит!
+   - КАТЕГОРИЧЕСКИ ЗАПРЕЩЕНО называть или рекомендовать товары, цена которых превышает указанный лимит (даже на 10 000 сум дороже — нельзя)!
+   - Если клиент назвал лимит 300 000 сум, ЗАПРЕЩЕНО советовать ZARAFOT (650 000) или TOKIM 3 (730 000). Предложи ABDULLAJON (280 000 сум), PAKHTAKOR 2 (260 000 сум) или PITAK 4 (160 000 сум).
+   - Если клиент назвал лимит 500 000 сум — предложи CHOPON B (2) (400 000 сум), TOKIM BIG (480 000 сум), ABDULLAJON (280 000 сум), PAKHTAKOR 2 (260 000 сум).
+   - Сразу подтверди, что ты подобрал изделия строго в рамках бюджета: «Отличный ориентир! Отобрал варианты мастерской строго в пределах вашего бюджета до [Сумма] сум:»
 
-2. СТРОГИЙ ЗАПРЕТ НА ЗВЁЗДОЧКИ:
-   НИКОГДА не используй маркдаун со звёздочками (**слово** или *слово*). Названия товаров и брендов пиши просто ЧИСТЫМ ТЕКСТОМ ЗАГЛАВНЫМИ БУКВАМИ (например: ZARAFOT, TOKIM 3, SOMSA, PITAK 4), без звёздочек вокруг!
+2. СТРОГИЙ ЗАПРЕТ НА ЗВЁЗДОЧКИ В ТЕКСТЕ:
+   НИКОГДА не используй маркдаун со звёздочками (**слово** или *слово*). Названия товаров пиши чистым текстом ЗАГЛАВНЫМИ БУКВАМИ (например: ZARAFOT, TOKIM 3, PAKHTAKOR 2, ABDULLAJON, SOMSA), без каких-либо звёздочек вокруг!
 
 3. ОБЯЗАТЕЛЬНОЕ ПРАВИЛО: ФИЧА ПОСЛЕ КАЖДОГО ПРЕДЛОЖЕНИЯ ТОВАРА:
-   Каждый раз, когда ты предлагаешь модель, СРАЗУ ЖЕ раскрой её ключевую фичу, тактильность или эргономику:
-   - ZARAFOT — [product:kan-002] ZARAFOT: сшита из тонкой вишневой кожи особой пластичной выделки, которая мягко драпируется на теле как ткань, а со временем приобретает благородный винтажный блеск.
-   - TOKIM 3 — [product:kan-001] TOKIM 3: плотная фактурная кожа отлично держит строгую форму, внутри защищенный отсек под планшет или книгу, а широкие лямки не натирают плечи.
-   - SOMSA — [product:kan-004] SOMSA: авторская треугольная геометрия по мотивам традиционной узбекской выпечки со скрытым карманом на молнии для самого ценного.
-   - FARROSH — [product:kan-005] FARROSH: вместительный шоппер с цельнокроеными кожаными ручками, выдерживает ноутбук, документы и покупки.
-   - PAKHTAKOR 2 — [product:kan-007] PAKHTAKOR 2: сверхпрочный натуральный хлопок канвас, который дышит, легко чистится и не боится путешествий.
+   Каждый раз, когда ты предлагаешь модель, СРАЗУ ЖЕ раскрой её конкретную уникальную фичу, тактильность или эргономику:
+   - ZARAFOT: сшита из тонкой вишневой кожи особой пластичной выделки, мягко драпируется на теле как шарф, а со временем приобретает благородный винтажный лоск.
+   - TOKIM 3: плотная фактурная кожа держит строгую форму, внутри защищенный отсек под планшет или книгу, а анатомические широкие лямки не давят на плечи при долгих прогулках.
+   - TOKIM BIG: прочный хлопковый деним на 33 литра с мягким карманом под ноутбук, очень легкий и выносливый в поездках.
+   - PAKHTAKOR 2: сверхпрочный натуральный хлопок канвас, который дышит, легко чистится, выдерживает ноутбук и ежедневную нагрузку.
+   - ABDULLAJON: компактная сумка из натуральной кожи с клапаном на кнопке, идеально вмещает смартфон, паспорт и ключи, оставляя руки свободными.
+   - CHOPON B (2): натуральная кожа с контрастным авторским кроем и удобными длинными ручками для ношения на плече или в руке.
+   - FARROSH: вместительный шоппер из мягкой кожи с цельнокроеными ручками, выдерживает до 10 кг покупок, документы формата А4 или ноутбук.
+   - PITAK 4: компактное кожаное портмоне ручной работы на кнопке с четкими слотами под банковские карты и купюры.
+   - SOMSA: оригинальный кожаный аксессуар в форме узбекской самсы с надежным металлическим карабином для ключей или фурнитуры сумки.
+   - BOSHLIK: теплый и стильный авторский капор-шапка из мягкого трикотажа, защищает от ветра и заменяет шарф.
+   - KOYLYAK 2W: женская рубашка свободного авторского кроя Free Size из 100% натурального дышащего хлопка.
+   - CHIPOLLINO M: мужские брюки из плотного хлопка с комфортной посадкой и авторской геометрией карманов.
 
 4. МАРКЕРЫ КАРТОЧЕК [product:ID]:
-   Всегда указывай маркер [product:ID] рядом с упоминанием товара, чтобы в интерфейсе появлялась кликабельная интерактивная карточка с фото и ценой.
+   Всегда указывай маркер [product:ID] рядом с названием модели (например: [product:kan-002] ZARAFOT), чтобы в чате появилась интерактивная карточка с фотографией, ценой и ссылкой.
 
-5. МЯГКИЙ ПРИЗЫВ К ЗАКАЗУ (SOFT CLOSE):
+5. ОБРАБОТКА НЕОПРЕДЕЛЕННЫХ ЗАПРОСОВ («хз что хочу», «не знаю что выбрать», «посоветуй что-нибудь»):
+   Отреагируй живо и дружелюбно: «Прекрасное состояние! Когда нет жестких рамок, проще всего найти вещь по любви.» Задай 1–2 понятных вопроса для сужения выбора (сумка или рюкзак, кожа или текстиль) и предложи 2 контрастных хита с фичами.
+
+6. МЯГКИЙ ПРИЗЫВ К ЗАКАЗУ (SOFT CLOSE):
    Напоминай, что все вещи Алексея Маньшаева отшиваются в Ташкенте малыми авторскими сериями, поэтому тиражи быстро заканчиваются.
-   Предлагай забронировать модель или уточнить расцветки в Telegram мастерской: @kanishka_dsgn (https://t.me/kanishka_dsgn).
+   Предлагай забронировать модель или уточнить наличие расцветок в Telegram мастерской: @kanishka_dsgn (https://t.me/kanishka_dsgn).
 
 Язык ответа: всегда отвечай на языке клиента. Текущий язык: ${lang}.
 
-Каталог мастерской Kanishka:
+Актуальный каталог мастерской Kanishka:
 ${catalogSummary}`;
+}
+
+/**
+ * Parses user input to extract any budget or price limit constraint.
+ * Handles "лимит 500к", "до 300 000 сум", "бюджет 200 тыс", "до 400", "не дороже 250k".
+ */
+export function extractBudget(query: string): number | null {
+  const q = query.toLowerCase();
+
+  // Pattern with keywords: "лимит 500к", "бюджет 300 000", "до 400", "не дороже 280к", "есть 200к", "потолок 500"
+  const kwMatch = q.match(
+    /(?:лимит|бюджет|до|не дороже|в пределах|около|максимум|потолок|есть|в районе|рассчитываю на)\s*[:=]?\s*(\d+[\s\d]*)\s*(к|k|тыс|тысяч|сум)?/i
+  );
+  if (kwMatch && kwMatch[1]) {
+    const raw = kwMatch[1].replace(/\s/g, '');
+    let val = parseFloat(raw);
+    const unit = kwMatch[2] ? kwMatch[2].toLowerCase() : '';
+    if (unit.startsWith('к') || unit.startsWith('k') || unit.startsWith('тыс')) {
+      val *= 1000;
+    } else if (val < 1000) {
+      val *= 1000; // e.g. "до 500" in UZS context means 500 000!
+    }
+    return isNaN(val) ? null : val;
+  }
+
+  // General "300к", "500k", "400тыс"
+  const kMatch = q.match(/(\d+)\s*(к|k|тыс)\b/i);
+  if (kMatch && kMatch[1]) {
+    let val = parseInt(kMatch[1], 10) * 1000;
+    if (val < 1000) val *= 1000;
+    return isNaN(val) ? null : val;
+  }
+
+  // Full sum like "300000 сум" or "500 000 сум"
+  const sumMatch = q.match(/(\d{2,4}[\s]?000)\s*(?:сум|uzs)?/i);
+  if (sumMatch && sumMatch[1]) {
+    const val = parseInt(sumMatch[1].replace(/\s/g, ''), 10);
+    return isNaN(val) ? null : val;
+  }
+
+  return null;
 }
 
 export function parseProductIds(text: string): { cleanText: string; productIds: string[] } {
   const productIds: string[] = [];
+
+  // 1. Extract explicit markers [product:kan-XXX]
   const regex = /\[product:(kan-\d{3})\]/g;
   let match: RegExpExecArray | null;
 
@@ -82,22 +135,30 @@ export function parseProductIds(text: string): { cleanText: string; productIds: 
     }
   }
 
-  // Clean markers out of prose and replace with clean product name without asterisks
+  // 2. Also detect product names mentioned in text even if model omitted markers!
+  const lowerText = text.toLowerCase();
+  for (const prod of products) {
+    if (lowerText.includes(prod.name.toLowerCase()) && !productIds.includes(prod.id)) {
+      productIds.push(prod.id);
+    }
+  }
+
+  // 3. Clean markers out of prose and replace with clean product name without asterisks
   let cleanText = text;
   for (const id of productIds) {
     const prod = products.find((p) => p.id === id);
     if (prod) {
-      const nameRegex = new RegExp(
+      const markerRegex = new RegExp(
         `\\[product:${id}\\]\\s*(\\*\\*${prod.name}\\*\\*|\\*${prod.name}\\*|${prod.name})?`,
         'gi'
       );
-      cleanText = cleanText.replace(nameRegex, prod.name);
+      cleanText = cleanText.replace(markerRegex, prod.name);
     } else {
       cleanText = cleanText.replace(`[product:${id}]`, '');
     }
   }
 
-  // Strip all markdown bold/italic asterisks completely
+  // 4. Strip all markdown bold/italic asterisks completely
   cleanText = cleanText
     .replace(/\*\*([^*]+)\*\*/g, '$1')
     .replace(/\*([^*]+)\*/g, '$1')
@@ -124,6 +185,16 @@ export async function askGemini(
     try {
       const response = await callGeminiApi(history, userPrompt, lang, apiKey.trim());
       const parsed = parseProductIds(response);
+
+      // Validate budget limit on Gemini response: if user gave a budget, ensure no over-budget cards
+      const budget = extractBudget(userPrompt);
+      if (budget) {
+        parsed.productIds = parsed.productIds.filter((id) => {
+          const prod = products.find((p) => p.id === id);
+          return prod ? prod.priceUZS <= budget : false;
+        });
+      }
+
       return { text: parsed.cleanText, suggestedProductIds: parsed.productIds };
     } catch (err) {
       console.warn('[Kanishka AI] Gemini API call error, falling back to local advisor:', err);
@@ -144,7 +215,7 @@ async function callGeminiApi(
 ): Promise<string> {
   const systemInstruction = buildSystemInstruction(lang);
 
-  // Sanitize history: ensure it starts with a user turn
+  // Sanitize history: ensure it starts with a user turn and exclude initial welcome message
   const sanitizedHistory = history
     .filter((msg, idx) => !(idx === 0 && msg.role === 'model'))
     .slice(-8)
@@ -172,12 +243,12 @@ async function callGeminiApi(
     },
   };
 
-  // List of active models prioritized by stability
+  // Prioritize stable Gemini 3.5 models
   const models = [
     'gemini-3.5-flash-lite',
-    'gemini-flash-lite-latest',
     'gemini-3.5-flash',
     'gemini-3.1-flash-lite',
+    'gemini-flash-lite-latest',
     'gemini-flash-latest',
   ];
   let lastError: any = null;
@@ -213,13 +284,52 @@ async function callGeminiApi(
 }
 
 /**
- * Intelligent local advisor that delivers high quality recommendations
- * even when offline or before the Gemini API key is configured.
+ * Intelligent local advisor that delivers high quality, budget-aware recommendations
+ * even when offline or during API rate limits.
  */
-function localConsultantFallback(query: string, lang: Lang): string {
+function localConsultantFallback(query: string, _lang: Lang): string {
   const q = query.toLowerCase().trim();
+  const budget = extractBudget(query);
 
-  // Vague / Undecided queries: "хз что хочу", "не знаю", "посоветуй", "что выбрать"
+  // 1. STRICT BUDGET / LIMIT HANDLING
+  if (budget !== null) {
+    const affordable = products
+      .filter((p) => p.priceUZS <= budget)
+      .sort((a, b) => b.priceUZS - a.priceUZS);
+
+    if (affordable.length === 0) {
+      return `В мастерской Kanishka все вещи создаются вручную из натуральной кожи и хлопка.
+Самый доступный авторский аксессуар мастерской — это кожаный брелок [product:kan-004] SOMSA (80 000 сум) и теплый капор [product:kan-011] BOSHLIK (130 000 сум).
+
+Подскажите, какой формат изделия вы ищете?`;
+    }
+
+    // Pick top 2-3 affordable items matching category if mentioned
+    let picks = affordable;
+    if (q.includes('рюкзак') || q.includes('backpack')) {
+      const bpacks = affordable.filter((p) => p.slug.includes('tokim'));
+      if (bpacks.length > 0) picks = bpacks;
+    } else if (q.includes('сумк') || q.includes('bag')) {
+      const bags = affordable.filter((p) => p.category === 'bags');
+      if (bags.length > 0) picks = bags;
+    }
+
+    const topPicks = picks.slice(0, 3);
+    const itemsText = topPicks
+      .map(
+        (p, i) =>
+          `${i + 1}. [product:${p.id}] ${p.name} (${p.priceUZS.toLocaleString('ru-RU')} сум) — ${p.specs.dimensions !== '—' ? `размер ${p.specs.dimensions}. ` : ''}${p.detailNote?.ru || p.description.ru}`
+      )
+      .join('\n\n');
+
+    return `Отличный ориентир! Отобрал для вас изделия мастерской строго в пределах вашего бюджета до ${budget.toLocaleString('ru-RU')} сум:
+
+${itemsText}
+
+Все модели отшиваются небольшими тиражами в Ташкенте. Какая из них вам ближе по стилю и задачам?`;
+  }
+
+  // 2. VAGUE / UNDECIDED: "хз что хочу", "не знаю", "посоветуй", "что выбрать"
   if (
     q.includes('хз') ||
     q.includes('не знаю') ||
@@ -231,41 +341,11 @@ function localConsultantFallback(query: string, lang: Lang): string {
     q.includes('not sure') ||
     q.includes('recommend')
   ) {
-    if (lang === 'en') {
-      return `That is actually the best starting point! When there are no rigid limits, it is much easier to find a piece you truly fall in love with.
-
-To help narrow down the direction:
-1. Do you prefer a relaxed shoulder bag or a structured backpack for freedom of movement?
-2. Are you drawn to tactile genuine leather or lightweight organic canvas?
-
-Here are our two most celebrated workshop icons to inspire you:
-
-1. [product:kan-002] ZARAFOT (650 000 UZS) — Sculptural shoulder bag crafted from supple crimson leather that drapes organically around the body and gains a vintage patina over time.
-2. [product:kan-001] TOKIM 3 (730 000 UZS) — Signature structured backpack in rich natural leather, featuring a padded tablet sleeve and ergonomic straps that never strain your shoulders.
-
-Which of these two moods resonates more with your style?`;
-    }
-
-    if (lang === 'uz') {
-      return `Bu ayni muddao! Qat'iy chegaralar bo'lmaganda, haqiqatan ham yoqadigan buyumni topish ancha osonroq bo'ladi.
-
-Tanlovni aniqlashtirish uchun:
-1. Sizga ko'proq yelkaga osiladigan yumshoq sumka yoqadimi yoki harakat erkinligini beruvchi ryukzakmi?
-2. Tabiiy yumshoq charm ma'qulmi yoki yengil paxta kanvasi?
-
-Ilhom olish uchun ustaxonamizning ikkita asosiy hitini tavsiya qilaman:
-
-1. [product:kan-002] ZARAFOT (650 000 so‘m) — Mayin qizil tabiiy charmdan tikilgan, yelkada qulay драпировка bo‘ladigan va vaqt o‘tishi bilan yanada chiroyli ochiladigan mualliflik sumkasi.
-2. [product:kan-001] TOKIM 3 (730 000 so‘m) — Shaklini mustahkam saqlovchi tabiiy charm ryukzak, ichida planshet uchun himoyalangan bo‘lmasi bor va yelkaga og‘irlik tushirmaydi.
-
-Sizga qaysi yo'nalish ko'proq ma'qul?`;
-    }
-
     return `Самое лучшее состояние! Когда нет жестких рамок, проще всего найти вещь по любви и зову сердца.
 
 Давайте нащупаем направление:
 1. Вам ближе свободная сумка на плечо или городской рюкзак, чтобы руки оставались свободными?
-2. Больше нравится тактильная натуральная кожа или лёгкий дышащий хлопковый канвас?
+2. Больше нравится тактильная натуральная кожа или легкий дышащий хлопковый канвас?
 
 Чтобы было от чего оттолкнуться, покажу два главных хита мастерской:
 
@@ -275,7 +355,7 @@ Sizga qaysi yo'nalish ko'proq ma'qul?`;
 Какой из этих двух форматов вам ближе по ритму жизни?`;
   }
 
-  // Greeting & Hello queries -> Proactive, tactful consultative sales
+  // 3. GREETINGS
   if (
     q === 'привет' ||
     q.startsWith('привет') ||
@@ -287,86 +367,73 @@ Sizga qaysi yo'nalish ko'proq ma'qul?`;
     q.startsWith('hello') ||
     q.startsWith('hey')
   ) {
-    if (lang === 'en') {
-      return `Hello! Delighted to welcome you to the Kanishka atelier. How can I help you today?
-
-Are you looking for a statement bag or backpack for yourself, or searching for a distinctive handcrafted gift?
-
-I can guide you through our natural leather essentials:
-1. [product:kan-002] ZARAFOT — Sculptural shoulder bag crafted from supple crimson leather that drapes naturally like silk.
-2. [product:kan-001] TOKIM 3 — Structured genuine leather backpack designed for everyday city carry with a protected tablet compartment.
-
-Which format fits your daily rhythm better?`;
-    }
-    if (lang === 'uz') {
-      return `Assalomu alaykum! Kanishka mualliflik ustaxonasiga xush kelibsiz. Bugun sizga qanday yordam bera olaman?
-
-O‘zingiz uchun har kunlik sumka yoki ryukzak tanlayapsizmi, yoki esda qolarli sovg‘a qidiryapsizmi?
-
-Bizning eng mashhur modellarimiz:
-1. [product:kan-002] ZARAFOT — Yumshoq qizil tabiiy charmdan tikilgan, yelkada qulay turadigan va vaqt o'tishi bilan yanada chiroyli tus oladigan sumka.
-2. [product:kan-001] TOKIM 3 — Shaklini ajoyib saqlovchi mustahkam charm ryukzak, ichida planshet va kitoblar uchun qulay bo'lmasi bor.
-
-Sizga qaysi shakl ko‘proq ma’qul?`;
-    }
     return `Здравствуйте! Рад приветствовать вас в мастерской Kanishka. Чем могу быть полезен сегодня?
 
-Подбираете сумку или рюкзак для себя, или присматриваете особенный подарок? Могу показать наши главные хиты с характером:
+Подбираете сумку или рюкзак для себя, или присматриваете особенный подарок? Могу сориентировать по нашему каталогу:
 1. [product:kan-002] ZARAFOT — Скульптурная сумка из тонкой вишневой кожи, которая мягко драпируется на теле как ткань и привлекает восхищенные взгляды.
 2. [product:kan-001] TOKIM 3 — Плотная фактурная кожа отлично держит строгую форму, внутри защищенный отсек под планшет или книгу, а лямки не давят на плечи.
 
 Какой формат вам ближе по стилю и ритму дня?`;
   }
 
-  // Backpack query
-  if (q.includes('рюкзак') || q.includes('backpack') || q.includes('ryukzak') || q.includes('ноутбук') || q.includes('laptop')) {
+  // 4. BACKPACKS
+  if (
+    q.includes('рюкзак') ||
+    q.includes('backpack') ||
+    q.includes('ryukzak') ||
+    q.includes('ноутбук') ||
+    q.includes('laptop')
+  ) {
     return `Для документов, учебы или города у нас есть два выразительных рюкзака:
 
 1. [product:kan-001] TOKIM 3 (730 000 сум) — Плотная зернистая кожа держит форму, защищает гаджеты от ударов, а внутри сделан отдельный карман под планшет и книги.
-2. [product:kan-012] TOKIM BIG (450 000 сум) — Сверхлегкий хлопковый деним выдерживает интенсивную ежедневную носку и легко стирается при необходимости.
+2. [product:kan-012] TOKIM BIG (480 000 сум) — Вместительный рюкзак на 33 литра из хлопкового денима с карманом под ноутбук, идеален для поездок.
 
 Какой материал вам ближе: фактурная авторская кожа или легкий практичный деним?`;
   }
 
-  // Crossbody / Shoulder / ZARAFOT
-  if (q.includes('zarafot') || q.includes('плечо') || q.includes('shoulder') || q.includes('crossbody') || q.includes('красн') || q.includes('red')) {
-    return `С удовольствием расскажу о наших сумках на плечо:
+  // 5. SHOULDER BAGS / CROSSBODY
+  if (
+    q.includes('плечо') ||
+    q.includes('shoulder') ||
+    q.includes('crossbody') ||
+    q.includes('красн') ||
+    q.includes('zarafot')
+  ) {
+    return `С удовольствием расскажу о наших сумках через плечо:
 
-1. [product:kan-002] ZARAFOT (650 000 сум) — Наш главный бестселлер: мягчайшая вишневая кожа струится и подстраивается под движения тела, а скрытые складки создают потрясающий визуальный объем.
-2. [product:kan-004] SOMSA (620 000 сум) — Оригинальная треугольная геометрия, вдохновленная традиционной восточной эстетикой, со скрытой молнией для безопасности.
-3. [product:kan-005] FARROSH (580 000 сум) — Вместительный лаконичный шоппер с цельнокроеными кожаными ручками под ноутбук и рабочие документы.
+1. [product:kan-002] ZARAFOT (650 000 сум) — Наш главный бестселлер: мягчайшая вишневая кожа струится и подстраивается под движения тела, а скрытые складки создают визуальный объем.
+2. [product:kan-009] ABDULLAJON (280 000 сум) — Компактная кроссбоди из натуральной кожи на кнопке, рассчитана под телефон, ключи и документы.
+3. [product:kan-008] CHOPON B (2) (400 000 сум) — Кожаная сумка графичного кроя с длинными ручками.
 
 Какая форма больше откликается вашему гардеробу?`;
   }
 
-  // Budget / inexpensive / canvas
-  if (q.includes('недорог') || q.includes('бюджет') || q.includes('дешев') || q.includes('скидк') || q.includes('до 400') || q.includes('до 500') || q.includes('cheap') || q.includes('canvas') || q.includes('канвас')) {
-    return `Если важны легкость, практичность и приятный бюджет, обратите внимание на эти изделия:
-
-1. [product:kan-007] PAKHTAKOR 2 (340 000 сум) — Суровый натуральный хлопковый канвас: неубиваемый, дышащий материал, не боится стирки и держит до 15 кг.
-2. [product:kan-003] ABDULLAJON (180 000 сум) — Компактный кошелек из натуральной кожи с фирменным тиснением мастерской.
-3. [product:kan-012] TOKIM BIG (450 000 сум) — Вместительный городской рюкзак из денима на каждый день.
-
-Все вещи шьются вручную прямо в Ташкенте.`;
-  }
-
-  // Gift query
-  if (q.includes('подарок') || q.includes('gift') || q.includes('sovg') || q.includes('девушк') || q.includes('парн') || q.includes('мужчин') || q.includes('женщин')) {
+  // 6. GIFTS
+  if (
+    q.includes('подарок') ||
+    q.includes('gift') ||
+    q.includes('sovg') ||
+    q.includes('девушк') ||
+    q.includes('парн') ||
+    q.includes('мужчин') ||
+    q.includes('женщин')
+  ) {
     return `В качестве подарка с душой и историей чаще всего выбирают:
 
 1. [product:kan-002] ZARAFOT (650 000 сум) — Знаковая вишневая сумка из струящейся натуральной кожи, которая производит «вау-эффект» с первого прикосновения.
-2. [product:kan-001] TOKIM 3 (730 000 сум) — Универсальный кожаный рюкзак унисекс, который носится годами и красиво стареет.
-3. [product:kan-003] ABDULLAJON (180 000 сум) — Лаконичное кожаное портмоне ручной работы в фирменной крафтовой упаковке.
+2. [product:kan-003] PITAK 4 (160 000 сум) — Лаконичное кожаное портмоне ручной работы на кнопке, универсальный памятный подарок.
+3. [product:kan-004] SOMSA (80 000 сум) — Фирменный кожаный брелок с карабином в виде традиционной узбекской самсы.
 
-Подскажите, кому выбираете подарок, и я помогу определиться точнее!`;
+Подскажите, кому выбираете подарок и какой бюджет рассматриваете?`;
   }
 
-  // General everyday recommendation
+  // 7. GENERAL EVERYDAY RECOMMENDATION
   return `В нашей мастерской все изделия создаются вручную малыми авторскими сериями. Вот три главных фаворита с их фичами:
 
 1. [product:kan-002] ZARAFOT (650 000 сум) — Мягкая вишневая кожа красиво драпируется на теле как ткань и приобретает винтажный лоск со временем.
-2. [product:kan-001] TOKIM 3 (730 000 сум) — Плотная натуральная кожа держит форму, защищает гаджеты, а широкие анатомические лямки не давят на плечи.
-3. [product:kan-007] PAKHTAKOR 2 (340 000 сум) — Сверхпрочный хлопковый канвас: не боится стирки, легко складывается и выдерживает любые нагрузки.
+2. [product:kan-007] PAKHTAKOR 2 (260 000 сум) — Сумка из хлопкового канваса: вмещает ноутбук, не боится стирки и идеальна на каждый день.
+3. [product:kan-001] TOKIM 3 (730 000 сум) — Плотная натуральная кожа держит форму, защищает гаджеты, а широкие анатомические лямки не давят на плечи.
 
 Расскажите подробнее: вам ближе сумка на плечо, городской рюкзак или практичный текстиль?`;
 }
