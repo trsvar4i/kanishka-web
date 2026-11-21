@@ -175,23 +175,96 @@ export default function AiAssistant({ lang = 'ru' }: AiAssistantProps) {
     }
   }, [lang]);
 
+  // Scroll to bottom on new messages
   useEffect(() => {
-    if (isOpen) {
-      if (messages.length > 1) {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-      }
-      setTimeout(() => inputRef.current?.focus(), 150);
-
-      // Lock body scroll on mobile
-      if (typeof window !== 'undefined' && window.innerWidth <= 640) {
-        const originalOverflow = document.body.style.overflow;
-        document.body.style.overflow = 'hidden';
-        return () => {
-          document.body.style.overflow = originalOverflow;
-        };
-      }
+    if (isOpen && messages.length > 1) {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
   }, [isOpen, messages.length, isLoading]);
+
+  // Focus input automatically on desktop only (avoids aggressive keyboard jump on mobile)
+  useEffect(() => {
+    if (isOpen && typeof window !== 'undefined' && window.innerWidth > 640) {
+      setTimeout(() => inputRef.current?.focus(), 150);
+    }
+  }, [isOpen]);
+
+  // Comprehensive Mobile & iOS Safari Viewport/Keyboard Synchronization
+  useEffect(() => {
+    if (!isOpen || typeof window === 'undefined') return;
+
+    if (window.innerWidth <= 640) {
+      const scrollY = window.scrollY || window.pageYOffset || 0;
+      const originalPosition = document.body.style.position;
+      const originalTop = document.body.style.top;
+      const originalLeft = document.body.style.left;
+      const originalRight = document.body.style.right;
+      const originalWidth = document.body.style.width;
+      const originalOverflow = document.body.style.overflow;
+      const originalHtmlOverflow = document.documentElement.style.overflow;
+
+      // 1. True iOS Body Scroll Lock (locks background page completely so it cannot shift)
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.left = '0';
+      document.body.style.right = '0';
+      document.body.style.width = '100%';
+      document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
+
+      const chatWindow = document.getElementById('ai-chat-window');
+
+      // 2. Visual Viewport tracking for software keyboard on iOS Safari
+      const syncViewport = () => {
+        if (!window.visualViewport || !chatWindow) return;
+        const vv = window.visualViewport;
+
+        // Pin the chat window height strictly to visible area above the keyboard
+        chatWindow.style.height = `${vv.height}px`;
+        chatWindow.style.top = `${vv.offsetTop}px`;
+        chatWindow.style.left = `${vv.offsetLeft}px`;
+        chatWindow.style.width = `${vv.width}px`;
+
+        // Check if virtual keyboard is up
+        const isKeyboardOpen = vv.height < window.innerHeight * 0.85;
+        chatWindow.classList.toggle('keyboard-open', isKeyboardOpen);
+
+        // Cancel any unwanted native window displacement
+        if (window.scrollY !== 0) {
+          window.scrollTo(0, 0);
+        }
+      };
+
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', syncViewport);
+        window.visualViewport.addEventListener('scroll', syncViewport);
+        syncViewport();
+      }
+
+      return () => {
+        document.body.style.position = originalPosition;
+        document.body.style.top = originalTop;
+        document.body.style.left = originalLeft;
+        document.body.style.right = originalRight;
+        document.body.style.width = originalWidth;
+        document.body.style.overflow = originalOverflow;
+        document.documentElement.style.overflow = originalHtmlOverflow;
+        window.scrollTo(0, scrollY);
+
+        if (window.visualViewport) {
+          window.visualViewport.removeEventListener('resize', syncViewport);
+          window.visualViewport.removeEventListener('scroll', syncViewport);
+        }
+        if (chatWindow) {
+          chatWindow.style.height = '';
+          chatWindow.style.top = '';
+          chatWindow.style.left = '';
+          chatWindow.style.width = '';
+          chatWindow.classList.remove('keyboard-open');
+        }
+      };
+    }
+  }, [isOpen]);
 
   const handleSend = async (textToSend?: string) => {
     const promptText = (textToSend || input).trim();
@@ -431,6 +504,20 @@ export default function AiAssistant({ lang = 'ru' }: AiAssistantProps) {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               disabled={isLoading}
+              onFocus={() => {
+                if (typeof window !== 'undefined' && window.innerWidth <= 640) {
+                  window.scrollTo(0, 0);
+                  setTimeout(() => {
+                    window.scrollTo(0, 0);
+                    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+                  }, 120);
+                }
+              }}
+              onBlur={() => {
+                if (typeof window !== 'undefined' && window.innerWidth <= 640) {
+                  window.scrollTo(0, 0);
+                }
+              }}
             />
             <button
               type="submit"
